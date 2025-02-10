@@ -1,0 +1,66 @@
+{
+  "name": "@primitives-xyz/socialfi",
+  "version": "0.1.0",
+  "description": "TypeScript/JavaScript SDK for the Tapestry Social API - Build social features into your app with ease",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "prepublishOnly": "npm run build",
+    "generate": "swagger-typescript-api -p https://api.usetapestry.dev/docs.json -o ./src -n api.ts --axios --unwrap-response-data --extract-request-params --extract-response-body"
+  },
+  "keywords": [
+    "tapestry",
+    "social",
+    "sdk",
+    "api",
+    "social-network",
+    "typescript",
+    "javascript",
+    "web3",
+    "blockchain",
+    "social-graph",
+    "primitives"
+  ],
+  "author": {
+    "name": "Primitives",
+    "url": "https://github.com/primitives-xyz"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/primitives-xyz/socialfi.git"
+  },
+  "bugs": {
+    "url": "https://github.com/primitives-xyz/socialfi/issues"
+  },
+  "homepage": "https://github.com/primitives-xyz/socialfi#readme",
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0",
+    "swagger-typescript-api": "^13.0.3",
+    "typescript": "^5.0.0",
+    "vitest": "^1.3.0"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
