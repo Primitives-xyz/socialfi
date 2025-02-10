@@ -171,7 +171,7 @@ const profiles = await api.profiles.profilesList({
 // Batch operations
 const batchResults = await api.contents.batchReadCreate(
   { apiKey: "YOUR_API_KEY" },
-  ["content_id_1", "content_id_2"]
+  ["content_id_1", "content_id_2"],
 );
 
 // Complex queries
@@ -232,7 +232,7 @@ function handleProfile(profile: ProfileSchema) {
 
 // Type your response data
 async function searchUsers(
-  query: string
+  query: string,
 ): Promise<SearchProfilesResponseSchema> {
   return client.searchProfiles(query);
 }

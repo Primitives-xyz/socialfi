@@ -31,11 +31,11 @@ export class TapestryClient {
     params: Omit<
       Parameters<typeof this.api.profiles.findOrCreateCreate>[1],
       "apiKey"
-    >
+    >,
   ) {
     return this.api.profiles.findOrCreateCreate(
       { apiKey: this.apiKey },
-      params
+      params,
     );
   }
 
@@ -45,11 +45,11 @@ export class TapestryClient {
 
   async updateProfile(
     id: string,
-    params: Parameters<typeof this.api.profiles.profilesUpdate>[1]
+    params: Parameters<typeof this.api.profiles.profilesUpdate>[1],
   ) {
     return this.api.profiles.profilesUpdate(
       { apiKey: this.apiKey, id },
-      params
+      params,
     );
   }
 
@@ -57,14 +57,14 @@ export class TapestryClient {
   async followUser(startId: string, endId: string) {
     return this.api.followers.postFollowers(
       { apiKey: this.apiKey },
-      { startId, endId }
+      { startId, endId },
     );
   }
 
   async unfollowUser(startId: string, endId: string) {
     return this.api.followers.removeCreate(
       { apiKey: this.apiKey },
-      { startId, endId }
+      { startId, endId },
     );
   }
 
@@ -78,11 +78,11 @@ export class TapestryClient {
 
   // Content methods
   async createContent(
-    params: Parameters<typeof this.api.contents.findOrCreateCreate>[1]
+    params: Parameters<typeof this.api.contents.findOrCreateCreate>[1],
   ) {
     return this.api.contents.findOrCreateCreate(
       { apiKey: this.apiKey },
-      params
+      params,
     );
   }
 
@@ -92,7 +92,7 @@ export class TapestryClient {
 
   // Comment methods
   async createComment(
-    params: Parameters<typeof this.api.comments.commentsCreate>[1]
+    params: Parameters<typeof this.api.comments.commentsCreate>[1],
   ) {
     return this.api.comments.commentsCreate({ apiKey: this.apiKey }, params);
   }
@@ -105,14 +105,14 @@ export class TapestryClient {
   async likeContent(nodeId: string, startId: string) {
     return this.api.likes.likesCreate(
       { apiKey: this.apiKey, nodeId },
-      { startId }
+      { startId },
     );
   }
 
   async unlikeContent(nodeId: string, startId: string) {
     return this.api.likes.likesDelete(
       { apiKey: this.apiKey, nodeId },
-      { startId }
+      { startId },
     );
   }
 
