@@ -95,7 +95,7 @@ export class TapestryClient {
 
   // Activity methods
   async getActivityFeed(username: string) {
-    return this.api.activity.feedDetail({
+    return this.api.activity.feedList({
       apiKey: this.apiKey,
       username,
     });
