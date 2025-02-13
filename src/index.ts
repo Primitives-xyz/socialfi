@@ -1,6 +1,6 @@
-import { Api } from "./api";
+import { Api } from './api';
 // Export all types from the API
-export * from "./api";
+export * from './api';
 
 export interface TapestryConfig {
   apiKey: string;
@@ -19,53 +19,35 @@ export class TapestryClient {
   constructor(config: TapestryConfig) {
     this.apiKey = config.apiKey;
     this.api = new Api({
-      baseURL: config.baseURL || "https://api.usetapestry.dev",
+      baseURL: config.baseURL || 'https://api.usetapestry.dev',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
   }
 
   // Profile methods
   async createProfile(
-    params: Omit<
-      Parameters<typeof this.api.profiles.findOrCreateCreate>[1],
-      "apiKey"
-    >,
+    params: Omit<Parameters<typeof this.api.profiles.findOrCreateCreate>[1], 'apiKey'>,
   ) {
-    return this.api.profiles.findOrCreateCreate(
-      { apiKey: this.apiKey },
-      params,
-    );
+    return this.api.profiles.findOrCreateCreate({ apiKey: this.apiKey }, params);
   }
 
   async getProfile(id: string) {
     return this.api.profiles.profilesDetail({ apiKey: this.apiKey, id });
   }
 
-  async updateProfile(
-    id: string,
-    params: Parameters<typeof this.api.profiles.profilesUpdate>[1],
-  ) {
-    return this.api.profiles.profilesUpdate(
-      { apiKey: this.apiKey, id },
-      params,
-    );
+  async updateProfile(id: string, params: Parameters<typeof this.api.profiles.profilesUpdate>[1]) {
+    return this.api.profiles.profilesUpdate({ apiKey: this.apiKey, id }, params);
   }
 
   // Follow methods
   async followUser(startId: string, endId: string) {
-    return this.api.followers.postFollowers(
-      { apiKey: this.apiKey },
-      { startId, endId },
-    );
+    return this.api.followers.postFollowers({ apiKey: this.apiKey }, { startId, endId });
   }
 
   async unfollowUser(startId: string, endId: string) {
-    return this.api.followers.removeCreate(
-      { apiKey: this.apiKey },
-      { startId, endId },
-    );
+    return this.api.followers.removeCreate({ apiKey: this.apiKey }, { startId, endId });
   }
 
   async isFollowing(startId: string, endId: string) {
@@ -77,13 +59,8 @@ export class TapestryClient {
   }
 
   // Content methods
-  async createContent(
-    params: Parameters<typeof this.api.contents.findOrCreateCreate>[1],
-  ) {
-    return this.api.contents.findOrCreateCreate(
-      { apiKey: this.apiKey },
-      params,
-    );
+  async createContent(params: Parameters<typeof this.api.contents.findOrCreateCreate>[1]) {
+    return this.api.contents.findOrCreateCreate({ apiKey: this.apiKey }, params);
   }
 
   async getContent(id: string) {
@@ -91,9 +68,7 @@ export class TapestryClient {
   }
 
   // Comment methods
-  async createComment(
-    params: Parameters<typeof this.api.comments.commentsCreate>[1],
-  ) {
+  async createComment(params: Parameters<typeof this.api.comments.commentsCreate>[1]) {
     return this.api.comments.commentsCreate({ apiKey: this.apiKey }, params);
   }
 
@@ -103,17 +78,11 @@ export class TapestryClient {
 
   // Like methods
   async likeContent(nodeId: string, startId: string) {
-    return this.api.likes.likesCreate(
-      { apiKey: this.apiKey, nodeId },
-      { startId },
-    );
+    return this.api.likes.likesCreate({ apiKey: this.apiKey, nodeId }, { startId });
   }
 
   async unlikeContent(nodeId: string, startId: string) {
-    return this.api.likes.likesDelete(
-      { apiKey: this.apiKey, nodeId },
-      { startId },
-    );
+    return this.api.likes.likesDelete({ apiKey: this.apiKey, nodeId }, { startId });
   }
 
   // Search methods
@@ -137,5 +106,11 @@ export class TapestryClient {
 export default TapestryClient;
 
 const client = new TapestryClient({
-  apiKey: "your_api_key",
+  apiKey: 'your_api_key',
 });
+
+client.createProfile({
+  username: 'johndoe',
+});
+
+client.followUser;

@@ -9,6 +9,100 @@
  * ---------------------------------------------------------------
  */
 
+export interface ActivityItemSchema {
+  type: 'following' | 'new_content' | 'like' | 'comment' | 'new_follower';
+  actor_id: string;
+  actor_username: string;
+  target_id?: string;
+  target_username?: string;
+  comment_id?: string;
+  timestamp: number;
+  activity: string;
+}
+
+export interface GetActivityFeedResponseSchema {
+  activities: {
+    type: 'following' | 'new_content' | 'like' | 'comment' | 'new_follower';
+    actor_id: string;
+    actor_username: string;
+    target_id?: string;
+    target_username?: string;
+    comment_id?: string;
+    timestamp: number;
+    activity: string;
+  }[];
+  page: number;
+  pageSize: number;
+}
+
+export interface SwapTransactionSchema {
+  type: string;
+  source: string;
+  description: string;
+  fee: number;
+  timestamp: string;
+  signature: string;
+  success: boolean;
+  walletAddress: string;
+  username: string;
+  from: {
+    amount: number;
+    token: string;
+  };
+  to: {
+    amount: number;
+    token: string;
+  };
+  profile?: {
+    username: string;
+    id: string;
+  };
+  accountsInvolved: string[];
+  involvedProfiles?: {
+    address: string;
+    profile: {
+      username: string;
+      id: string;
+    };
+  }[];
+}
+
+export interface GetSwapActivityResponseSchema {
+  transactions: {
+    type: string;
+    source: string;
+    description: string;
+    fee: number;
+    timestamp: string;
+    signature: string;
+    success: boolean;
+    walletAddress: string;
+    username: string;
+    from: {
+      amount: number;
+      token: string;
+    };
+    to: {
+      amount: number;
+      token: string;
+    };
+    profile?: {
+      username: string;
+      id: string;
+    };
+    accountsInvolved: string[];
+    involvedProfiles?: {
+      address: string;
+      profile: {
+        username: string;
+        id: string;
+      };
+    }[];
+  }[];
+  page: number;
+  pageSize: number;
+}
+
 export interface CommentSchema {
   id: string;
   created_at: number;
@@ -397,6 +491,16 @@ export interface GetChestsResponseSchema {
 
 export interface ClaimChestResponseSchema {
   balance?: string;
+  /**
+   * @min 0
+   * @exclusiveMin true
+   */
+  giftAmount?: number;
+}
+
+export interface PlayGameResponseSchema {
+  userBalance?: string;
+  gameCreditsFee: number;
 }
 
 export interface CustomPropertySchema {
@@ -466,6 +570,59 @@ export interface SuggestionUserSchema {
   position: number;
 }
 
+export interface LeaderboardMetricsSchema {
+  contentCount: number;
+}
+
+export interface LeaderboardEntryWithMetricsSchema {
+  profile: {
+    id: string;
+    namespace: string;
+    created_at: number;
+    username: string;
+    bio?: string | null;
+    image?: string | null;
+  };
+  metrics: {
+    contentCount: number;
+  };
+}
+
+export interface LeaderboardResponseSchema {
+  entries: {
+    profile: {
+      id: string;
+      namespace: string;
+      created_at: number;
+      username: string;
+      bio?: string | null;
+      image?: string | null;
+    };
+    metrics: {
+      contentCount: number;
+    };
+  }[];
+  page: number;
+  pageSize: number;
+}
+
+export interface LeaderboardTimeWindowSchema {
+  field: string;
+  start: number;
+  end?: number;
+}
+
+export interface GetLeaderboardParamsSchema {
+  namespace: string;
+  timeWindow?: {
+    field: string;
+    start: number;
+    end?: number;
+  };
+  page?: number;
+  pageSize?: number;
+}
+
 export interface CreateLikeSchema {
   startId: string;
 }
@@ -491,16 +648,16 @@ export interface NimbusCheckoutInputSchema {
   idempotencyKey: string;
 }
 
+export interface NimbusCheckoutResponseSchema {
+  id: string;
+  url: string | null;
+  idempotencyKey: string;
+  userId: string;
+}
+
 export interface NimbusDeployInputSchema {
   contentId: string;
   idempotencyKey: string;
-}
-
-export interface NimbusCheckoutResponseSchema {
-  id: string;
-  url: string;
-  idempotencyKey: string;
-  userId: string;
 }
 
 export interface GameDetailsSchema {
@@ -508,15 +665,17 @@ export interface GameDetailsSchema {
   gameName: string;
   appNamespace: string;
   title: string;
+  deployUrl: string;
 }
 
 export interface GamesAndScoresSchema {
-  games: {
+  scores: {
     gameDetails: {
       gameId: string;
       gameName: string;
       appNamespace: string;
       title: string;
+      deployUrl: string;
     };
     score: {
       /**
@@ -537,6 +696,18 @@ export interface GamesAndScoresSchema {
   }[];
 }
 
+export interface GetGamesResponseSchema {
+  games: {
+    gameId: string;
+    gameName: string;
+    appNamespace: string;
+    title: string;
+    deployUrl: string;
+  }[];
+  page: number;
+  pageSize: number;
+}
+
 export interface LinkSchema {
   label: string;
   url: string;
@@ -550,7 +721,7 @@ export interface BaseNotificationSchema {
 export interface WalletNotificationSchema {
   message: string;
   recipient: string;
-  medium: "wallet";
+  medium: 'wallet';
   title: string;
   link?: {
     label: string;
@@ -561,7 +732,7 @@ export interface WalletNotificationSchema {
 export interface PhoneNotificationSchema {
   message: string;
   recipient: string;
-  medium: "phone";
+  medium: 'phone';
 }
 
 export interface ProfileSchema {
@@ -575,9 +746,9 @@ export interface ProfileSchema {
 
 export interface FindOrCreateProfileSchema {
   username: string;
-  blockchain?: "SOLANA" | "ETHEREUM";
+  blockchain?: 'SOLANA' | 'ETHEREUM';
   /** @default "FAST_UNCONFIRMED" */
-  execution?: "FAST_UNCONFIRMED" | "QUICK_SIGNATURE" | "CONFIRMED_AND_PARSED";
+  execution?: 'FAST_UNCONFIRMED' | 'QUICK_SIGNATURE' | 'CONFIRMED_AND_PARSED';
   properties?: {
     key: string;
     value: string | number | boolean;
@@ -611,14 +782,14 @@ export interface UpdateProfileSchema {
   ownerWallet?: {
     /** @minLength 32 */
     address: string;
-    blockchain: "SOLANA" | "ETHEREUM";
+    blockchain: 'SOLANA' | 'ETHEREUM';
   };
   properties?: {
     key: string;
     value: string | number | boolean;
   }[];
   /** @default "FAST_UNCONFIRMED" */
-  execution?: "FAST_UNCONFIRMED" | "QUICK_SIGNATURE" | "CONFIRMED_AND_PARSED";
+  execution?: 'FAST_UNCONFIRMED' | 'QUICK_SIGNATURE' | 'CONFIRMED_AND_PARSED';
 }
 
 export interface SuggestedProfileFollowSchema {
@@ -691,6 +862,7 @@ export interface FindOrCreateResponseSchema {
     image?: string | null;
   };
   walletAddress?: string;
+  hashedPhoneNumber?: string;
 }
 
 export interface GetProfilesResponseSchema {
@@ -783,12 +955,12 @@ export interface FollowCountsSchema {
 export interface WalletSchema {
   id: string;
   created_at: number;
-  blockchain: "SOLANA" | "ETHEREUM";
-  wallet_type?: "PHANTOM" | "WEB3AUTH";
+  blockchain: 'SOLANA' | 'ETHEREUM';
+  wallet_type?: 'PHANTOM' | 'WEB3AUTH';
 }
 
 export interface GetPointsEarnedByPeriodSchema {
-  periodType: "MONTH" | "YEAR";
+  periodType: 'MONTH' | 'YEAR';
 }
 
 export interface GetPointsEarnedByPeriodResponseSchema {
@@ -834,6 +1006,12 @@ export interface ProfileIdentitySchema {
     image?: string | null;
   };
   walletAddress?: string;
+  namespace: {
+    name: string;
+    readableName: string | null;
+    faviconURL: string | null;
+    userProfileURL: string | null;
+  };
 }
 
 export interface ProfileIdentityResponseSchema {
@@ -847,6 +1025,12 @@ export interface ProfileIdentityResponseSchema {
       image?: string | null;
     };
     walletAddress?: string;
+    namespace: {
+      name: string;
+      readableName: string | null;
+      faviconURL: string | null;
+      userProfileURL: string | null;
+    };
   }[];
   page: number;
   pageSize: number;
@@ -868,13 +1052,14 @@ export interface ProfilesListParams {
   /** @default "created_at" */
   sortBy?: string;
   /** @default "DESC" */
-  sortDirection?: "ASC" | "DESC";
+  sortDirection?: 'ASC' | 'DESC';
 }
 
 export type ProfilesListData = GetProfilesResponseSchema;
 
 export interface ProfilesDetailParams {
   apiKey: string;
+  /** The id of the start profile. */
   id: string;
 }
 
@@ -949,7 +1134,9 @@ export type SuggestedDetailData = Record<
 
 export interface ReferralsDetailParams {
   apiKey: string;
+  /** Optional filter to specify the depth of upstream referral connections (profiles that referred this user). Defaults to 2 if no value is specified. */
   upstream?: string;
+  /** Optional filter to specify the depth of downstream referral connections (profiles referred by this user). Defaults to 2 if no value is specified. */
   downstream?: string;
   id: string;
 }
@@ -1004,7 +1191,7 @@ export type StateListData = IsFollowingSchema;
 export interface ContentsListParams {
   apiKey: string;
   orderByField?: string;
-  orderByDirection?: "ASC" | "DESC";
+  orderByDirection?: 'ASC' | 'DESC';
   requireFields?: string;
   filterField?: string;
   filterValue?: string;
@@ -1012,7 +1199,7 @@ export interface ContentsListParams {
   pageSize?: string;
   profileId?: string;
   requestingProfileId?: string;
-  namespace?: "primitives";
+  namespace?: 'primitives';
 }
 
 export type ContentsListData = GetContestsResponseSchema;
@@ -1153,27 +1340,24 @@ export interface NotificationsCreateParams {
 
 export type NotificationsCreateData = object;
 
-export interface FeedDetailParams {
+export interface FeedListParams {
   apiKey: string;
+  username: string;
   page?: string;
   pageSize?: string;
-  username: string;
 }
 
-export interface FeedDetailData {
-  activities: {
-    type: "following" | "new_content" | "like" | "comment" | "new_follower";
-    actor_id: string;
-    actor_username: string;
-    target_id?: string;
-    target_username?: string;
-    comment_id?: string;
-    timestamp: number;
-    activity: string;
-  }[];
-  page: number;
-  pageSize: number;
+export type FeedListData = GetActivityFeedResponseSchema;
+
+export interface SwapListParams {
+  apiKey: string;
+  username?: string;
+  page?: string;
+  pageSize?: string;
+  tokenAddress?: string;
 }
+
+export type SwapListData = GetSwapActivityResponseSchema;
 
 export interface IdentitiesDetailParams {
   apiKey: string;
@@ -1184,12 +1368,13 @@ export interface IdentitiesDetailParams {
 
 export type IdentitiesDetailData = ProfileIdentityResponseSchema;
 
-import type { AxiosInstance, AxiosRequestConfig, HeadersDefaults, ResponseType } from "axios";
-import axios from "axios";
+import type { AxiosInstance, AxiosRequestConfig, HeadersDefaults, ResponseType } from 'axios';
+import axios from 'axios';
 
 export type QueryParamsType = Record<string | number, any>;
 
-export interface FullRequestParams extends Omit<AxiosRequestConfig, "data" | "params" | "url" | "responseType"> {
+export interface FullRequestParams
+  extends Omit<AxiosRequestConfig, 'data' | 'params' | 'url' | 'responseType'> {
   /** set parameter to `true` for call `securityWorker` for this request */
   secure?: boolean;
   /** request path */
@@ -1204,9 +1389,10 @@ export interface FullRequestParams extends Omit<AxiosRequestConfig, "data" | "pa
   body?: unknown;
 }
 
-export type RequestParams = Omit<FullRequestParams, "body" | "method" | "query" | "path">;
+export type RequestParams = Omit<FullRequestParams, 'body' | 'method' | 'query' | 'path'>;
 
-export interface ApiConfig<SecurityDataType = unknown> extends Omit<AxiosRequestConfig, "data" | "cancelToken"> {
+export interface ApiConfig<SecurityDataType = unknown>
+  extends Omit<AxiosRequestConfig, 'data' | 'cancelToken'> {
   securityWorker?: (
     securityData: SecurityDataType | null,
   ) => Promise<AxiosRequestConfig | void> | AxiosRequestConfig | void;
@@ -1215,23 +1401,28 @@ export interface ApiConfig<SecurityDataType = unknown> extends Omit<AxiosRequest
 }
 
 export enum ContentType {
-  Json = "application/json",
-  FormData = "multipart/form-data",
-  UrlEncoded = "application/x-www-form-urlencoded",
-  Text = "text/plain",
+  Json = 'application/json',
+  FormData = 'multipart/form-data',
+  UrlEncoded = 'application/x-www-form-urlencoded',
+  Text = 'text/plain',
 }
 
 export class HttpClient<SecurityDataType = unknown> {
   public instance: AxiosInstance;
   private securityData: SecurityDataType | null = null;
-  private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
+  private securityWorker?: ApiConfig<SecurityDataType>['securityWorker'];
   private secure?: boolean;
   private format?: ResponseType;
 
-  constructor({ securityWorker, secure, format, ...axiosConfig }: ApiConfig<SecurityDataType> = {}) {
+  constructor({
+    securityWorker,
+    secure,
+    format,
+    ...axiosConfig
+  }: ApiConfig<SecurityDataType> = {}) {
     this.instance = axios.create({
       ...axiosConfig,
-      baseURL: axiosConfig.baseURL || "https://api.usetapestry.dev/api/v1",
+      baseURL: axiosConfig.baseURL || 'https://api.usetapestry.dev/api/v1',
     });
     this.secure = secure;
     this.format = format;
@@ -1242,7 +1433,10 @@ export class HttpClient<SecurityDataType = unknown> {
     this.securityData = data;
   };
 
-  protected mergeRequestParams(params1: AxiosRequestConfig, params2?: AxiosRequestConfig): AxiosRequestConfig {
+  protected mergeRequestParams(
+    params1: AxiosRequestConfig,
+    params2?: AxiosRequestConfig,
+  ): AxiosRequestConfig {
     const method = params1.method || (params2 && params2.method);
 
     return {
@@ -1250,7 +1444,9 @@ export class HttpClient<SecurityDataType = unknown> {
       ...params1,
       ...(params2 || {}),
       headers: {
-        ...((method && this.instance.defaults.headers[method.toLowerCase() as keyof HeadersDefaults]) || {}),
+        ...((method &&
+          this.instance.defaults.headers[method.toLowerCase() as keyof HeadersDefaults]) ||
+          {}),
         ...(params1.headers || {}),
         ...((params2 && params2.headers) || {}),
       },
@@ -1258,7 +1454,7 @@ export class HttpClient<SecurityDataType = unknown> {
   }
 
   protected stringifyFormItem(formItem: unknown) {
-    if (typeof formItem === "object" && formItem !== null) {
+    if (typeof formItem === 'object' && formItem !== null) {
       return JSON.stringify(formItem);
     } else {
       return `${formItem}`;
@@ -1292,18 +1488,18 @@ export class HttpClient<SecurityDataType = unknown> {
     ...params
   }: FullRequestParams): Promise<T> => {
     const secureParams =
-      ((typeof secure === "boolean" ? secure : this.secure) &&
+      ((typeof secure === 'boolean' ? secure : this.secure) &&
         this.securityWorker &&
         (await this.securityWorker(this.securityData))) ||
       {};
     const requestParams = this.mergeRequestParams(params, secureParams);
     const responseFormat = format || this.format || undefined;
 
-    if (type === ContentType.FormData && body && body !== null && typeof body === "object") {
+    if (type === ContentType.FormData && body && body !== null && typeof body === 'object') {
       body = this.createFormData(body as Record<string, unknown>);
     }
 
-    if (type === ContentType.Text && body && body !== null && typeof body !== "string") {
+    if (type === ContentType.Text && body && body !== null && typeof body !== 'string') {
       body = JSON.stringify(body);
     }
 
@@ -1312,7 +1508,7 @@ export class HttpClient<SecurityDataType = unknown> {
         ...requestParams,
         headers: {
           ...(requestParams.headers || {}),
-          ...(type ? { "Content-Type": type } : {}),
+          ...(type ? { 'Content-Type': type } : {}),
         },
         params: query,
         responseType: responseFormat,
@@ -1352,11 +1548,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/profiles/findOrCreate`,
-        method: "POST",
+        method: 'POST',
         query: query,
         body: data,
         type: ContentType.Json,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1376,9 +1572,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/profiles/`,
-        method: "GET",
+        method: 'GET',
         query: query,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1398,9 +1594,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/profiles/${id}`,
-        method: "GET",
+        method: 'GET',
         query: query,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1412,7 +1608,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Update a profile
      * @request PUT:/profiles/{id}
      */
-    profilesUpdate: ({ id, ...query }: ProfilesUpdateParams, data: UpdateProfileSchema, params: RequestParams = {}) =>
+    profilesUpdate: (
+      { id, ...query }: ProfilesUpdateParams,
+      data: UpdateProfileSchema,
+      params: RequestParams = {},
+    ) =>
       this.request<
         ProfilesUpdateData,
         {
@@ -1420,11 +1620,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/profiles/${id}`,
-        method: "PUT",
+        method: 'PUT',
         query: query,
         body: data,
         type: ContentType.Json,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1444,9 +1644,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/profiles/${id}/followers`,
-        method: "GET",
+        method: 'GET',
         query: query,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1466,9 +1666,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/profiles/${id}/following`,
-        method: "GET",
+        method: 'GET',
         query: query,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1480,7 +1680,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get a list of profiles in a user's network that also follow a given profile
      * @request GET:/profiles/{id}/following-who-follow
      */
-    followingWhoFollowDetail: ({ id, ...query }: FollowingWhoFollowDetailParams, params: RequestParams = {}) =>
+    followingWhoFollowDetail: (
+      { id, ...query }: FollowingWhoFollowDetailParams,
+      params: RequestParams = {},
+    ) =>
       this.request<
         FollowingWhoFollowDetailData,
         {
@@ -1488,9 +1691,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/profiles/${id}/following-who-follow`,
-        method: "GET",
+        method: 'GET',
         query: query,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1502,7 +1705,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get suggested profiles to follow
      * @request GET:/profiles/suggested/{identifier}
      */
-    suggestedDetail: ({ identifier, ...query }: SuggestedDetailParams, params: RequestParams = {}) =>
+    suggestedDetail: (
+      { identifier, ...query }: SuggestedDetailParams,
+      params: RequestParams = {},
+    ) =>
       this.request<
         SuggestedDetailData,
         {
@@ -1510,9 +1716,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/profiles/suggested/${identifier}`,
-        method: "GET",
+        method: 'GET',
         query: query,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1521,7 +1727,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Profiles
      * @name ReferralsDetail
-     * @summary Retrieve direct and indirect referral connections for a user profile in both directions (who referred them and who they referred), up to a specified depth level.
+     * @summary Retrieve referrals
      * @request GET:/profiles/{id}/referrals
      */
     referralsDetail: ({ id, ...query }: ReferralsDetailParams, params: RequestParams = {}) =>
@@ -1532,9 +1738,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/profiles/${id}/referrals`,
-        method: "GET",
+        method: 'GET',
         query: query,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1546,7 +1752,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get profiles that own a specific token
      * @request GET:/profiles/token-owners/{tokenAddress}
      */
-    tokenOwnersDetail: ({ tokenAddress, ...query }: TokenOwnersDetailParams, params: RequestParams = {}) =>
+    tokenOwnersDetail: (
+      { tokenAddress, ...query }: TokenOwnersDetailParams,
+      params: RequestParams = {},
+    ) =>
       this.request<
         TokenOwnersDetailData,
         {
@@ -1554,9 +1763,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/profiles/token-owners/${tokenAddress}`,
-        method: "GET",
+        method: 'GET',
         query: query,
-        format: "json",
+        format: 'json',
         ...params,
       }),
   };
@@ -1569,7 +1778,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Follow a profile
      * @request POST:/followers/add
      */
-    postFollowers: (query: PostFollowersParams, data: CreateFollowSchema, params: RequestParams = {}) =>
+    postFollowers: (
+      query: PostFollowersParams,
+      data: CreateFollowSchema,
+      params: RequestParams = {},
+    ) =>
       this.request<
         PostFollowersData,
         {
@@ -1577,11 +1790,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/followers/add`,
-        method: "POST",
+        method: 'POST',
         query: query,
         body: data,
         type: ContentType.Json,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1593,7 +1806,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Unfollow a profile
      * @request POST:/followers/remove
      */
-    removeCreate: (query: RemoveCreateParams, data: DeleteFollowSchema, params: RequestParams = {}) =>
+    removeCreate: (
+      query: RemoveCreateParams,
+      data: DeleteFollowSchema,
+      params: RequestParams = {},
+    ) =>
       this.request<
         RemoveCreateData,
         {
@@ -1601,11 +1818,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/followers/remove`,
-        method: "POST",
+        method: 'POST',
         query: query,
         body: data,
         type: ContentType.Json,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1625,9 +1842,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/followers/state`,
-        method: "GET",
+        method: 'GET',
         query: query,
-        format: "json",
+        format: 'json',
         ...params,
       }),
   };
@@ -1648,9 +1865,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/contents/`,
-        method: "GET",
+        method: 'GET',
         query: query,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1670,9 +1887,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/contents/${id}`,
-        method: "GET",
+        method: 'GET',
         query: query,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1684,7 +1901,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Update content
      * @request PUT:/contents/{id}
      */
-    contentsUpdate: ({ id, ...query }: ContentsUpdateParams, data: UpdateContentSchema, params: RequestParams = {}) =>
+    contentsUpdate: (
+      { id, ...query }: ContentsUpdateParams,
+      data: UpdateContentSchema,
+      params: RequestParams = {},
+    ) =>
       this.request<
         ContentsUpdateData,
         {
@@ -1692,11 +1913,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/contents/${id}`,
-        method: "PUT",
+        method: 'PUT',
         query: query,
         body: data,
         type: ContentType.Json,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1716,9 +1937,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/contents/${id}`,
-        method: "DELETE",
+        method: 'DELETE',
         query: query,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1742,11 +1963,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/contents/findOrCreate`,
-        method: "POST",
+        method: 'POST',
         query: query,
         body: data,
         type: ContentType.Json,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1766,11 +1987,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/contents/batch/read`,
-        method: "POST",
+        method: 'POST',
         query: query,
         body: data,
         type: ContentType.Json,
-        format: "json",
+        format: 'json',
         ...params,
       }),
   };
@@ -1791,9 +2012,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/comments/`,
-        method: "GET",
+        method: 'GET',
         query: query,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1805,7 +2026,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Create comment
      * @request POST:/comments/
      */
-    commentsCreate: (query: CommentsCreateParams, data: CreateCommentSchema, params: RequestParams = {}) =>
+    commentsCreate: (
+      query: CommentsCreateParams,
+      data: CreateCommentSchema,
+      params: RequestParams = {},
+    ) =>
       this.request<
         CommentsCreateData,
         {
@@ -1813,11 +2038,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/comments/`,
-        method: "POST",
+        method: 'POST',
         query: query,
         body: data,
         type: ContentType.Json,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1837,9 +2062,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/comments/${id}`,
-        method: "GET",
+        method: 'GET',
         query: query,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1851,7 +2076,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Update comment
      * @request PUT:/comments/{id}
      */
-    commentsUpdate: ({ id, ...query }: CommentsUpdateParams, data: UpdateCommentSchema, params: RequestParams = {}) =>
+    commentsUpdate: (
+      { id, ...query }: CommentsUpdateParams,
+      data: UpdateCommentSchema,
+      params: RequestParams = {},
+    ) =>
       this.request<
         CommentsUpdateData,
         {
@@ -1859,11 +2088,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/comments/${id}`,
-        method: "PUT",
+        method: 'PUT',
         query: query,
         body: data,
         type: ContentType.Json,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1883,9 +2112,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/comments/${id}`,
-        method: "DELETE",
+        method: 'DELETE',
         query: query,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1905,9 +2134,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/comments/${id}/replies`,
-        method: "GET",
+        method: 'GET',
         query: query,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1927,11 +2156,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/comments/batch/read`,
-        method: "POST",
+        method: 'POST',
         query: query,
         body: data,
         type: ContentType.Json,
-        format: "json",
+        format: 'json',
         ...params,
       }),
   };
@@ -1944,7 +2173,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Create like
      * @request POST:/likes/{nodeId}
      */
-    likesCreate: ({ nodeId, ...query }: LikesCreateParams, data: CreateLikeSchema, params: RequestParams = {}) =>
+    likesCreate: (
+      { nodeId, ...query }: LikesCreateParams,
+      data: CreateLikeSchema,
+      params: RequestParams = {},
+    ) =>
       this.request<
         LikesCreateData,
         {
@@ -1952,11 +2185,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/likes/${nodeId}`,
-        method: "POST",
+        method: 'POST',
         query: query,
         body: data,
         type: ContentType.Json,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1968,7 +2201,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Remove like
      * @request DELETE:/likes/{nodeId}
      */
-    likesDelete: ({ nodeId, ...query }: LikesDeleteParams, data: DeleteLikeSchema, params: RequestParams = {}) =>
+    likesDelete: (
+      { nodeId, ...query }: LikesDeleteParams,
+      data: DeleteLikeSchema,
+      params: RequestParams = {},
+    ) =>
       this.request<
         LikesDeleteData,
         {
@@ -1976,11 +2213,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/likes/${nodeId}`,
-        method: "DELETE",
+        method: 'DELETE',
         query: query,
         body: data,
         type: ContentType.Json,
-        format: "json",
+        format: 'json',
         ...params,
       }),
   };
@@ -2001,9 +2238,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/creators/invite/${identifier}`,
-        method: "GET",
+        method: 'GET',
         query: query,
-        format: "json",
+        format: 'json',
         ...params,
       }),
   };
@@ -2016,7 +2253,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get socials counts for a given wallet
      * @request GET:/wallets/{address}/socialCounts
      */
-    socialCountsDetail: ({ address, ...query }: SocialCountsDetailParams, params: RequestParams = {}) =>
+    socialCountsDetail: (
+      { address, ...query }: SocialCountsDetailParams,
+      params: RequestParams = {},
+    ) =>
       this.request<
         SocialCountsDetailData,
         {
@@ -2024,9 +2264,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/wallets/${address}/socialCounts`,
-        method: "GET",
+        method: 'GET',
         query: query,
-        format: "json",
+        format: 'json',
         ...params,
       }),
   };
@@ -2047,9 +2287,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/search/profiles`,
-        method: "GET",
+        method: 'GET',
         query: query,
-        format: "json",
+        format: 'json',
         ...params,
       }),
   };
@@ -2074,11 +2314,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/notifications/`,
-        method: "POST",
+        method: 'POST',
         query: query,
         body: data,
         type: ContentType.Json,
-        format: "json",
+        format: 'json',
         ...params,
       }),
   };
@@ -2087,21 +2327,43 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description Get activity feed for a user including follows, content, likes, comments and new followers
      *
      * @tags Activity
-     * @name FeedDetail
+     * @name FeedList
      * @summary Get activity feed
-     * @request GET:/activity/feed/{username}
+     * @request GET:/activity/feed
      */
-    feedDetail: ({ username, ...query }: FeedDetailParams, params: RequestParams = {}) =>
+    feedList: (query: FeedListParams, params: RequestParams = {}) =>
       this.request<
-        FeedDetailData,
+        FeedListData,
         {
           error: string;
         }
       >({
-        path: `/activity/feed/${username}`,
-        method: "GET",
+        path: `/activity/feed`,
+        method: 'GET',
         query: query,
-        format: "json",
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get swap transactions from wallets that the user follows or for a specific token
+     *
+     * @tags Activity
+     * @name SwapList
+     * @summary Get swap activity from followed wallets or specific token
+     * @request GET:/activity/swap
+     */
+    swapList: (query: SwapListParams, params: RequestParams = {}) =>
+      this.request<
+        SwapListData,
+        {
+          error: string;
+        }
+      >({
+        path: `/activity/swap`,
+        method: 'GET',
+        query: query,
+        format: 'json',
         ...params,
       }),
   };
@@ -2122,9 +2384,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/identities/${id}`,
-        method: "GET",
+        method: 'GET',
         query: query,
-        format: "json",
+        format: 'json',
         ...params,
       }),
   };
