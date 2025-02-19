@@ -1036,14 +1036,11 @@ export interface ProfileIdentityResponseSchema {
   pageSize: number;
 }
 
-export interface FindOrCreateCreateParams {
-  apiKey: string;
-}
+export interface FindOrCreateCreateParams {}
 
 export type FindOrCreateCreateData = FindOrCreateResponseSchema;
 
 export interface ProfilesListParams {
-  apiKey: string;
   /** @minLength 32 */
   walletAddress?: string;
   phoneNumber?: string;
@@ -1058,7 +1055,6 @@ export interface ProfilesListParams {
 export type ProfilesListData = GetProfilesResponseSchema;
 
 export interface ProfilesDetailParams {
-  apiKey: string;
   /** The id of the start profile. */
   id: string;
 }
@@ -1066,14 +1062,12 @@ export interface ProfilesDetailParams {
 export type ProfilesDetailData = GetProfileDetailsSchema;
 
 export interface ProfilesUpdateParams {
-  apiKey: string;
   id: string;
 }
 
 export type ProfilesUpdateData = ProfileSchema;
 
 export interface FollowersDetailParams {
-  apiKey: string;
   page?: string;
   pageSize?: string;
   id: string;
@@ -1082,7 +1076,6 @@ export interface FollowersDetailParams {
 export type FollowersDetailData = GetProfileFollowersResponseSchema;
 
 export interface FollowingDetailParams {
-  apiKey: string;
   page?: string;
   pageSize?: string;
   id: string;
@@ -1091,7 +1084,6 @@ export interface FollowingDetailParams {
 export type FollowingDetailData = GetProfileFollowingResponseSchema;
 
 export interface FollowingWhoFollowDetailParams {
-  apiKey: string;
   requestorId: string;
   page?: string;
   pageSize?: string;
@@ -1101,7 +1093,6 @@ export interface FollowingWhoFollowDetailParams {
 export type FollowingWhoFollowDetailData = GetProfileFollowingWhoFollowResponseSchema;
 
 export interface SuggestedDetailParams {
-  apiKey: string;
   /** should either be a wallet address or a phone number */
   identifier: string;
 }
@@ -1133,7 +1124,6 @@ export type SuggestedDetailData = Record<
 >;
 
 export interface ReferralsDetailParams {
-  apiKey: string;
   /** Optional filter to specify the depth of upstream referral connections (profiles that referred this user). Defaults to 2 if no value is specified. */
   upstream?: string;
   /** Optional filter to specify the depth of downstream referral connections (profiles referred by this user). Defaults to 2 if no value is specified. */
@@ -1144,7 +1134,6 @@ export interface ReferralsDetailParams {
 export type ReferralsDetailData = ReferralProfilesSchema;
 
 export interface TokenOwnersDetailParams {
-  apiKey: string;
   requestorId?: string;
   page?: string;
   pageSize?: string;
@@ -1168,20 +1157,15 @@ export interface TokenOwnersDetailData {
   pageSize: number;
 }
 
-export interface PostFollowersParams {
-  apiKey: string;
-}
+export interface PostFollowersParams {}
 
 export type PostFollowersData = object;
 
-export interface RemoveCreateParams {
-  apiKey: string;
-}
+export interface RemoveCreateParams {}
 
 export type RemoveCreateData = object;
 
 export interface StateListParams {
-  apiKey: string;
   startId: string;
   endId: string;
 }
@@ -1189,7 +1173,6 @@ export interface StateListParams {
 export type StateListData = IsFollowingSchema;
 
 export interface ContentsListParams {
-  apiKey: string;
   orderByField?: string;
   orderByDirection?: 'ASC' | 'DESC';
   requireFields?: string;
@@ -1205,7 +1188,6 @@ export interface ContentsListParams {
 export type ContentsListData = GetContestsResponseSchema;
 
 export interface ContentsDetailParams {
-  apiKey: string;
   requestingProfileId?: string;
   id: string;
 }
@@ -1213,33 +1195,26 @@ export interface ContentsDetailParams {
 export type ContentsDetailData = ContentDetailsSchema;
 
 export interface ContentsUpdateParams {
-  apiKey: string;
   id: string;
 }
 
 export type ContentsUpdateData = ContentSchema;
 
 export interface ContentsDeleteParams {
-  apiKey: string;
   id: string;
 }
 
 export type ContentsDeleteData = object;
 
-export interface FindOrCreateCreateParams2 {
-  apiKey: string;
-}
+export interface FindOrCreateCreateParams2 {}
 
 export type FindOrCreateCreateResult = ContentSchema;
 
-export interface BatchReadCreateParams {
-  apiKey: string;
-}
+export interface BatchReadCreateParams {}
 
 export type BatchReadCreateData = GetBatchContentsResponseSchema;
 
 export interface CommentsListParams {
-  apiKey: string;
   contentId?: string;
   profileId?: string;
   targetProfileId?: string;
@@ -1250,14 +1225,11 @@ export interface CommentsListParams {
 
 export type CommentsListData = GetCommentsResponseSchema;
 
-export interface CommentsCreateParams {
-  apiKey: string;
-}
+export interface CommentsCreateParams {}
 
 export type CommentsCreateData = CommentSchema;
 
 export interface CommentsDetailParams {
-  apiKey: string;
   requestingProfileId?: string;
   id: string;
 }
@@ -1265,21 +1237,18 @@ export interface CommentsDetailParams {
 export type CommentsDetailData = CommentDetailsWithRepliesSchema;
 
 export interface CommentsUpdateParams {
-  apiKey: string;
   id: string;
 }
 
 export type CommentsUpdateData = CommentSchema;
 
 export interface CommentsDeleteParams {
-  apiKey: string;
   id: string;
 }
 
 export type CommentsDeleteData = object;
 
 export interface RepliesDetailParams {
-  apiKey: string;
   page?: string;
   pageSize?: string;
   requestingProfileId?: string;
@@ -1288,28 +1257,23 @@ export interface RepliesDetailParams {
 
 export type RepliesDetailData = GetCommentsResponseSchema;
 
-export interface BatchReadCreateParams2 {
-  apiKey: string;
-}
+export interface BatchReadCreateParams2 {}
 
 export type BatchReadCreateResult = GetBatchCommentsResponseSchema;
 
 export interface LikesCreateParams {
-  apiKey: string;
   nodeId: string;
 }
 
 export type LikesCreateData = object;
 
 export interface LikesDeleteParams {
-  apiKey: string;
   nodeId: string;
 }
 
 export type LikesDeleteData = object;
 
 export interface InviteDetailParams {
-  apiKey: string;
   /** should either be a wallet address or a phone number */
   identifier: string;
 }
@@ -1317,14 +1281,12 @@ export interface InviteDetailParams {
 export type InviteDetailData = SuggestedInviteSchema[];
 
 export interface SocialCountsDetailParams {
-  apiKey: string;
   address: string;
 }
 
 export type SocialCountsDetailData = FollowCountsSchema;
 
 export interface ProfilesListParams2 {
-  apiKey: string;
   query: string;
   /** @default "false" */
   includeExternalProfiles?: string;
@@ -1334,14 +1296,11 @@ export interface ProfilesListParams2 {
 
 export type ProfilesListResult = SearchProfilesResponseSchema;
 
-export interface NotificationsCreateParams {
-  apiKey: string;
-}
+export interface NotificationsCreateParams {}
 
 export type NotificationsCreateData = object;
 
 export interface FeedListParams {
-  apiKey: string;
   username: string;
   page?: string;
   pageSize?: string;
@@ -1350,7 +1309,6 @@ export interface FeedListParams {
 export type FeedListData = GetActivityFeedResponseSchema;
 
 export interface SwapListParams {
-  apiKey: string;
   username?: string;
   page?: string;
   pageSize?: string;
@@ -1360,7 +1318,6 @@ export interface SwapListParams {
 export type SwapListData = GetSwapActivityResponseSchema;
 
 export interface IdentitiesDetailParams {
-  apiKey: string;
   page?: string;
   pageSize?: string;
   id: string;

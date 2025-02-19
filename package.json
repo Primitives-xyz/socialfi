@@ -1,10 +1,17 @@
 {
   "name": "socialfi",
-  "version": "0.1.2",
+  "version": "0.1.5",
   "description": "TypeScript/JavaScript SDK for the Tapestry Social API - Build social features into your app with ease",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
   "scripts": {
     "build": "tsc",
     "test": "vitest",
