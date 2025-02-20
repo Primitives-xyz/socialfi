@@ -272,6 +272,12 @@ export interface GetBatchCommentsResponseSchema {
   }[];
 }
 
+export interface ContactSchema {
+  /** @minLength 1 */
+  id: string;
+  type: 'EMAIL' | 'PHONE' | 'TWITTER';
+}
+
 export interface ContentSchema {
   id: string;
   created_at: number;
@@ -381,8 +387,10 @@ export interface SuggestedInviteSchema {
   wallet?: {
     address: string;
   };
-  phone?: {
-    hashedPhoneNumber: string;
+  contact?: {
+    /** @minLength 1 */
+    id: string;
+    type: 'EMAIL' | 'PHONE' | 'TWITTER';
   };
 }
 
@@ -638,9 +646,10 @@ export interface NamespacePropertiesSchema {
   userProfileURL: string | null;
 }
 
-export interface CrateNimbusAppSchema {
+export interface CreateNimbusAppSchema {
   name: string;
   userId: string;
+  paid?: boolean;
 }
 
 export interface NimbusCheckoutInputSchema {
@@ -658,6 +667,7 @@ export interface NimbusCheckoutResponseSchema {
 export interface NimbusDeployInputSchema {
   contentId: string;
   idempotencyKey: string;
+  paid?: boolean;
 }
 
 export interface GameDetailsSchema {
@@ -746,33 +756,43 @@ export interface ProfileSchema {
 
 export interface FindOrCreateProfileSchema {
   username: string;
+  id?: string;
+  bio?: string;
+  image?: string;
+  referredById?: string;
+  phoneNumber?: string;
+  /** @minLength 32 */
+  walletAddress?: string;
   blockchain?: 'SOLANA' | 'ETHEREUM';
-  /** @default "FAST_UNCONFIRMED" */
-  execution?: 'FAST_UNCONFIRMED' | 'QUICK_SIGNATURE' | 'CONFIRMED_AND_PARSED';
+  contact?: {
+    /** @minLength 1 */
+    id: string;
+    type: 'EMAIL' | 'PHONE' | 'TWITTER';
+  };
   properties?: {
     key: string;
     value: string | number | boolean;
   }[];
-  /** @minLength 32 */
-  walletAddress?: string;
-  phoneNumber?: string;
-  id?: string;
-  image?: string;
-  bio?: string;
-  referredById?: string;
+  /** @default "FAST_UNCONFIRMED" */
+  execution?: 'FAST_UNCONFIRMED' | 'QUICK_SIGNATURE' | 'CONFIRMED_AND_PARSED';
 }
 
 export interface X {
   username: string;
+  id?: string;
+  bio?: string;
+  image?: string;
+  referredById?: string;
+  phoneNumber?: string;
+  contact?: {
+    /** @minLength 1 */
+    id: string;
+    type: 'EMAIL' | 'PHONE' | 'TWITTER';
+  };
   properties?: {
     key: string;
     value: string | number | boolean;
   }[];
-  phoneNumber?: string;
-  id?: string;
-  image?: string;
-  bio?: string;
-  referredById?: string;
 }
 
 export interface UpdateProfileSchema {
@@ -810,8 +830,10 @@ export interface SuggestedProfileFollowSchema {
   wallet?: {
     address: string;
   };
-  phone?: {
-    hashedPhoneNumber: string;
+  contact?: {
+    /** @minLength 1 */
+    id: string;
+    type: 'EMAIL' | 'PHONE' | 'TWITTER';
   };
 }
 
@@ -863,6 +885,11 @@ export interface FindOrCreateResponseSchema {
   };
   walletAddress?: string;
   hashedPhoneNumber?: string;
+  contact?: {
+    /** @minLength 1 */
+    id: string;
+    type: 'EMAIL' | 'PHONE' | 'TWITTER';
+  };
 }
 
 export interface GetProfilesResponseSchema {
@@ -893,6 +920,12 @@ export interface GetProfileDetailsSchema {
     image?: string | null;
   };
   walletAddress?: string;
+  hashedPhoneNumber?: string;
+  contact?: {
+    /** @minLength 1 */
+    id: string;
+    type: 'EMAIL' | 'PHONE' | 'TWITTER';
+  };
   socialCounts: {
     followers: number;
     following: number;
@@ -997,25 +1030,11 @@ export interface SearchProfilesResponseSchema {
 }
 
 export interface ProfileIdentitySchema {
-  profile: {
-    id: string;
-    namespace: string;
-    created_at: number;
-    username: string;
-    bio?: string | null;
-    image?: string | null;
+  wallet?: {
+    /** @minLength 32 */
+    address?: string;
   };
-  walletAddress?: string;
-  namespace: {
-    name: string;
-    readableName: string | null;
-    faviconURL: string | null;
-    userProfileURL: string | null;
-  };
-}
-
-export interface ProfileIdentityResponseSchema {
-  identities: {
+  profiles: {
     profile: {
       id: string;
       namespace: string;
@@ -1024,7 +1043,6 @@ export interface ProfileIdentityResponseSchema {
       bio?: string | null;
       image?: string | null;
     };
-    walletAddress?: string;
     namespace: {
       name: string;
       readableName: string | null;
@@ -1032,15 +1050,43 @@ export interface ProfileIdentityResponseSchema {
       userProfileURL: string | null;
     };
   }[];
+}
+
+export interface ProfileIdentityResponseSchema {
+  identities: {
+    wallet?: {
+      /** @minLength 32 */
+      address?: string;
+    };
+    profiles: {
+      profile: {
+        id: string;
+        namespace: string;
+        created_at: number;
+        username: string;
+        bio?: string | null;
+        image?: string | null;
+      };
+      namespace: {
+        name: string;
+        readableName: string | null;
+        faviconURL: string | null;
+        userProfileURL: string | null;
+      };
+    }[];
+  }[];
   page: number;
   pageSize: number;
 }
 
-export interface FindOrCreateCreateParams {}
+export interface FindOrCreateCreateParams {
+  apiKey: string;
+}
 
 export type FindOrCreateCreateData = FindOrCreateResponseSchema;
 
 export interface ProfilesListParams {
+  apiKey: string;
   /** @minLength 32 */
   walletAddress?: string;
   phoneNumber?: string;
@@ -1055,6 +1101,7 @@ export interface ProfilesListParams {
 export type ProfilesListData = GetProfilesResponseSchema;
 
 export interface ProfilesDetailParams {
+  apiKey: string;
   /** The id of the start profile. */
   id: string;
 }
@@ -1062,12 +1109,14 @@ export interface ProfilesDetailParams {
 export type ProfilesDetailData = GetProfileDetailsSchema;
 
 export interface ProfilesUpdateParams {
+  apiKey: string;
   id: string;
 }
 
 export type ProfilesUpdateData = ProfileSchema;
 
 export interface FollowersDetailParams {
+  apiKey: string;
   page?: string;
   pageSize?: string;
   id: string;
@@ -1076,6 +1125,7 @@ export interface FollowersDetailParams {
 export type FollowersDetailData = GetProfileFollowersResponseSchema;
 
 export interface FollowingDetailParams {
+  apiKey: string;
   page?: string;
   pageSize?: string;
   id: string;
@@ -1084,6 +1134,7 @@ export interface FollowingDetailParams {
 export type FollowingDetailData = GetProfileFollowingResponseSchema;
 
 export interface FollowingWhoFollowDetailParams {
+  apiKey: string;
   requestorId: string;
   page?: string;
   pageSize?: string;
@@ -1093,7 +1144,10 @@ export interface FollowingWhoFollowDetailParams {
 export type FollowingWhoFollowDetailData = GetProfileFollowingWhoFollowResponseSchema;
 
 export interface SuggestedDetailParams {
-  /** should either be a wallet address or a phone number */
+  apiKey: string;
+  /** @default "PHONE" */
+  contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
+  /** should either be a wallet address (default) or a contact id. when using contact ids, specify the contactType via query params */
   identifier: string;
 }
 
@@ -1117,13 +1171,16 @@ export type SuggestedDetailData = Record<
     wallet?: {
       address: string;
     };
-    phone?: {
-      hashedPhoneNumber: string;
+    contact?: {
+      /** @minLength 1 */
+      id: string;
+      type: 'EMAIL' | 'PHONE' | 'TWITTER';
     };
   }
 >;
 
 export interface ReferralsDetailParams {
+  apiKey: string;
   /** Optional filter to specify the depth of upstream referral connections (profiles that referred this user). Defaults to 2 if no value is specified. */
   upstream?: string;
   /** Optional filter to specify the depth of downstream referral connections (profiles referred by this user). Defaults to 2 if no value is specified. */
@@ -1134,6 +1191,7 @@ export interface ReferralsDetailParams {
 export type ReferralsDetailData = ReferralProfilesSchema;
 
 export interface TokenOwnersDetailParams {
+  apiKey: string;
   requestorId?: string;
   page?: string;
   pageSize?: string;
@@ -1157,15 +1215,20 @@ export interface TokenOwnersDetailData {
   pageSize: number;
 }
 
-export interface PostFollowersParams {}
+export interface PostFollowersParams {
+  apiKey: string;
+}
 
 export type PostFollowersData = object;
 
-export interface RemoveCreateParams {}
+export interface RemoveCreateParams {
+  apiKey: string;
+}
 
 export type RemoveCreateData = object;
 
 export interface StateListParams {
+  apiKey: string;
   startId: string;
   endId: string;
 }
@@ -1173,6 +1236,7 @@ export interface StateListParams {
 export type StateListData = IsFollowingSchema;
 
 export interface ContentsListParams {
+  apiKey: string;
   orderByField?: string;
   orderByDirection?: 'ASC' | 'DESC';
   requireFields?: string;
@@ -1188,6 +1252,7 @@ export interface ContentsListParams {
 export type ContentsListData = GetContestsResponseSchema;
 
 export interface ContentsDetailParams {
+  apiKey: string;
   requestingProfileId?: string;
   id: string;
 }
@@ -1195,26 +1260,33 @@ export interface ContentsDetailParams {
 export type ContentsDetailData = ContentDetailsSchema;
 
 export interface ContentsUpdateParams {
+  apiKey: string;
   id: string;
 }
 
 export type ContentsUpdateData = ContentSchema;
 
 export interface ContentsDeleteParams {
+  apiKey: string;
   id: string;
 }
 
 export type ContentsDeleteData = object;
 
-export interface FindOrCreateCreateParams2 {}
+export interface FindOrCreateCreateParams2 {
+  apiKey: string;
+}
 
 export type FindOrCreateCreateResult = ContentSchema;
 
-export interface BatchReadCreateParams {}
+export interface BatchReadCreateParams {
+  apiKey: string;
+}
 
 export type BatchReadCreateData = GetBatchContentsResponseSchema;
 
 export interface CommentsListParams {
+  apiKey: string;
   contentId?: string;
   profileId?: string;
   targetProfileId?: string;
@@ -1225,11 +1297,14 @@ export interface CommentsListParams {
 
 export type CommentsListData = GetCommentsResponseSchema;
 
-export interface CommentsCreateParams {}
+export interface CommentsCreateParams {
+  apiKey: string;
+}
 
 export type CommentsCreateData = CommentSchema;
 
 export interface CommentsDetailParams {
+  apiKey: string;
   requestingProfileId?: string;
   id: string;
 }
@@ -1237,18 +1312,21 @@ export interface CommentsDetailParams {
 export type CommentsDetailData = CommentDetailsWithRepliesSchema;
 
 export interface CommentsUpdateParams {
+  apiKey: string;
   id: string;
 }
 
 export type CommentsUpdateData = CommentSchema;
 
 export interface CommentsDeleteParams {
+  apiKey: string;
   id: string;
 }
 
 export type CommentsDeleteData = object;
 
 export interface RepliesDetailParams {
+  apiKey: string;
   page?: string;
   pageSize?: string;
   requestingProfileId?: string;
@@ -1257,36 +1335,45 @@ export interface RepliesDetailParams {
 
 export type RepliesDetailData = GetCommentsResponseSchema;
 
-export interface BatchReadCreateParams2 {}
+export interface BatchReadCreateParams2 {
+  apiKey: string;
+}
 
 export type BatchReadCreateResult = GetBatchCommentsResponseSchema;
 
 export interface LikesCreateParams {
+  apiKey: string;
   nodeId: string;
 }
 
 export type LikesCreateData = object;
 
 export interface LikesDeleteParams {
+  apiKey: string;
   nodeId: string;
 }
 
 export type LikesDeleteData = object;
 
 export interface InviteDetailParams {
-  /** should either be a wallet address or a phone number */
+  apiKey: string;
+  /** @default "PHONE" */
+  contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
+  /** should either be a wallet address (default) or a contact id. when using contact ids, specify the contactType via query params */
   identifier: string;
 }
 
 export type InviteDetailData = SuggestedInviteSchema[];
 
 export interface SocialCountsDetailParams {
+  apiKey: string;
   address: string;
 }
 
 export type SocialCountsDetailData = FollowCountsSchema;
 
 export interface ProfilesListParams2 {
+  apiKey: string;
   query: string;
   /** @default "false" */
   includeExternalProfiles?: string;
@@ -1296,11 +1383,14 @@ export interface ProfilesListParams2 {
 
 export type ProfilesListResult = SearchProfilesResponseSchema;
 
-export interface NotificationsCreateParams {}
+export interface NotificationsCreateParams {
+  apiKey: string;
+}
 
 export type NotificationsCreateData = object;
 
 export interface FeedListParams {
+  apiKey: string;
   username: string;
   page?: string;
   pageSize?: string;
@@ -1309,6 +1399,7 @@ export interface FeedListParams {
 export type FeedListData = GetActivityFeedResponseSchema;
 
 export interface SwapListParams {
+  apiKey: string;
   username?: string;
   page?: string;
   pageSize?: string;
@@ -1318,12 +1409,26 @@ export interface SwapListParams {
 export type SwapListData = GetSwapActivityResponseSchema;
 
 export interface IdentitiesDetailParams {
+  apiKey: string;
   page?: string;
   pageSize?: string;
   id: string;
 }
 
 export type IdentitiesDetailData = ProfileIdentityResponseSchema;
+
+export interface ProfilesDetailParams2 {
+  apiKey: string;
+  page?: string;
+  pageSize?: string;
+  /** @default "created_at" */
+  sortBy?: string;
+  /** @default "DESC" */
+  sortDirection?: 'ASC' | 'DESC';
+  id: string;
+}
+
+export type ProfilesDetailResult = GetProfilesResponseSchema;
 
 import type { AxiosInstance, AxiosRequestConfig, HeadersDefaults, ResponseType } from 'axios';
 import axios from 'axios';
@@ -2184,7 +2289,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Creators
      * @name InviteDetail
-     * @summary Get suggested wallets/phones to invite
+     * @summary Get suggested wallets/contacts to invite
      * @request GET:/creators/invite/{identifier}
      */
     inviteDetail: ({ identifier, ...query }: InviteDetailParams, params: RequestParams = {}) =>
@@ -2326,11 +2431,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   };
   identities = {
     /**
-     * @description This endpoint retrieves all associated profiles across namespaces by searching with either a phone number or wallet address, including any interconnected profiles when phone and wallet relationships exist.
+     * @description Retrieves all connected wallets associated with a specified wallet address. For each wallet address, up to 5 linked profiles are returned. To retrieve the complete list of profiles for a specific wallet, use the /identities/{id}/profiles endpoint.
      *
      * @tags Identities
      * @name IdentitiesDetail
-     * @summary Finds associated profiles across namespaces using a phone number or wallet address, including any linked profiles.
+     * @summary Finds connected wallets using a wallet address.
      * @request GET:/identities/{id}
      */
     identitiesDetail: ({ id, ...query }: IdentitiesDetailParams, params: RequestParams = {}) =>
@@ -2341,6 +2446,28 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/identities/${id}`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description This endpoint retrieves all profiles that were created by a specific wallet address.
+     *
+     * @tags Identities
+     * @name ProfilesDetail
+     * @summary Finds associated profiles across namespaces using a wallet address.
+     * @request GET:/identities/{id}/profiles
+     */
+    profilesDetail: ({ id, ...query }: ProfilesDetailParams2, params: RequestParams = {}) =>
+      this.request<
+        ProfilesDetailResult,
+        {
+          error: string;
+        }
+      >({
+        path: `/identities/${id}/profiles`,
         method: 'GET',
         query: query,
         format: 'json',
