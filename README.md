@@ -80,10 +80,11 @@ async function getFollowers(profileId: string) {
   }
 }
 
-// Advanced: Direct API access
+// Advanced: Direct API access with automatic API key injection
 async function advancedUsage() {
   // Access any API endpoint directly, even if not wrapped by the SDK
-  const result = await client.api.profiles.profilesList({
+  // No need to include apiKey in the query parameters - it's automatically injected
+  const result = await client.profiles.profilesList({
     page: '1',
     pageSize: '20',
     sortBy: 'created_at',
@@ -104,6 +105,22 @@ interface TapestryConfig {
   baseURL?: string; // Optional: Override the default API URL
   debug?: boolean; // Optional: Enable debug logging
 }
+```
+
+### Automatic API Key Injection
+
+The SDK automatically injects your API key into all requests, so you don't need to include it in each API call. This makes your code cleaner and less error-prone.
+
+```typescript
+// No need to include apiKey in the query parameters
+const profiles = await client.profiles.profilesList({
+  page: '1',
+  pageSize: '20',
+  sortBy: 'created_at',
+  sortDirection: 'DESC',
+});
+
+// The SDK automatically adds the apiKey parameter for you
 ```
 
 ### Profile Management
@@ -223,25 +240,26 @@ await client.api.notifications.notificationsCreate(
 
 ### Advanced Usage: Direct API Access
 
-For advanced use cases or accessing API endpoints not yet wrapped by the SDK, you can use the underlying API client directly:
+For advanced use cases or accessing API endpoints not yet wrapped by the SDK, you can use the API client directly:
 
 ```typescript
-// Access the underlying API client
-const { api } = client;
-
-// Use any API endpoint directly
-const profiles = await api.profiles.profilesList({
+// All API endpoints are available directly on the client
+// No need to include apiKey in the query parameters - it's automatically injected
+const profiles = await client.profiles.profilesList({
   page: '1',
   pageSize: '20',
   sortBy: 'created_at',
   sortDirection: 'DESC',
 });
 
+// For even more advanced use cases, you can access the underlying API client
+const { api } = client;
+
 // Batch operations
-const batchResults = await api.contents.batchReadCreate({}, ['content_id_1', 'content_id_2']);
+const batchResults = await client.contents.batchReadCreate({}, ['content_id_1', 'content_id_2']);
 
 // Complex queries with custom properties
-const searchResults = await api.search.profilesList({
+const searchResults = await client.search.profilesList({
   query: 'search term',
   includeExternalProfiles: 'true',
   page: '1',
