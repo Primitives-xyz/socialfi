@@ -1629,3 +1629,1051 @@ export interface ProfilesDetailParams2 {
 }
 
 export type ProfilesDetailResult = GetProfilesResponseSchema;
+
+import type { AxiosInstance, AxiosRequestConfig, HeadersDefaults, ResponseType } from 'axios';
+import axios from 'axios';
+
+export type QueryParamsType = Record<string | number, any>;
+
+export interface FullRequestParams
+  extends Omit<AxiosRequestConfig, 'data' | 'params' | 'url' | 'responseType'> {
+  /** set parameter to `true` for call `securityWorker` for this request */
+  secure?: boolean;
+  /** request path */
+  path: string;
+  /** content type of request body */
+  type?: ContentType;
+  /** query params */
+  query?: QueryParamsType;
+  /** format of response (i.e. response.json() -> format: "json") */
+  format?: ResponseType;
+  /** request body */
+  body?: unknown;
+}
+
+export type RequestParams = Omit<FullRequestParams, 'body' | 'method' | 'query' | 'path'>;
+
+export interface ApiConfig<SecurityDataType = unknown>
+  extends Omit<AxiosRequestConfig, 'data' | 'cancelToken'> {
+  securityWorker?: (
+    securityData: SecurityDataType | null,
+  ) => Promise<AxiosRequestConfig | void> | AxiosRequestConfig | void;
+  secure?: boolean;
+  format?: ResponseType;
+}
+
+export enum ContentType {
+  Json = 'application/json',
+  FormData = 'multipart/form-data',
+  UrlEncoded = 'application/x-www-form-urlencoded',
+  Text = 'text/plain',
+}
+
+export class HttpClient<SecurityDataType = unknown> {
+  public instance: AxiosInstance;
+  private securityData: SecurityDataType | null = null;
+  private securityWorker?: ApiConfig<SecurityDataType>['securityWorker'];
+  private secure?: boolean;
+  private format?: ResponseType;
+
+  constructor({
+    securityWorker,
+    secure,
+    format,
+    ...axiosConfig
+  }: ApiConfig<SecurityDataType> = {}) {
+    this.instance = axios.create({
+      ...axiosConfig,
+      baseURL: axiosConfig.baseURL || 'https://api.usetapestry.dev/api/v1',
+    });
+    this.secure = secure;
+    this.format = format;
+    this.securityWorker = securityWorker;
+  }
+
+  public setSecurityData = (data: SecurityDataType | null) => {
+    this.securityData = data;
+  };
+
+  protected mergeRequestParams(
+    params1: AxiosRequestConfig,
+    params2?: AxiosRequestConfig,
+  ): AxiosRequestConfig {
+    const method = params1.method || (params2 && params2.method);
+
+    return {
+      ...this.instance.defaults,
+      ...params1,
+      ...(params2 || {}),
+      headers: {
+        ...((method &&
+          this.instance.defaults.headers[method.toLowerCase() as keyof HeadersDefaults]) ||
+          {}),
+        ...(params1.headers || {}),
+        ...((params2 && params2.headers) || {}),
+      },
+    };
+  }
+
+  protected stringifyFormItem(formItem: unknown) {
+    if (typeof formItem === 'object' && formItem !== null) {
+      return JSON.stringify(formItem);
+    } else {
+      return `${formItem}`;
+    }
+  }
+
+  protected createFormData(input: Record<string, unknown>): FormData {
+    if (input instanceof FormData) {
+      return input;
+    }
+    return Object.keys(input || {}).reduce((formData, key) => {
+      const property = input[key];
+      const propertyContent: any[] = property instanceof Array ? property : [property];
+
+      for (const formItem of propertyContent) {
+        const isFileType = formItem instanceof Blob || formItem instanceof File;
+        formData.append(key, isFileType ? formItem : this.stringifyFormItem(formItem));
+      }
+
+      return formData;
+    }, new FormData());
+  }
+
+  public request = async <T = any, _E = any>({
+    secure,
+    path,
+    type,
+    query,
+    format,
+    body,
+    ...params
+  }: FullRequestParams): Promise<T> => {
+    const secureParams =
+      ((typeof secure === 'boolean' ? secure : this.secure) &&
+        this.securityWorker &&
+        (await this.securityWorker(this.securityData))) ||
+      {};
+    const requestParams = this.mergeRequestParams(params, secureParams);
+    const responseFormat = format || this.format || undefined;
+
+    if (type === ContentType.FormData && body && body !== null && typeof body === 'object') {
+      body = this.createFormData(body as Record<string, unknown>);
+    }
+
+    if (type === ContentType.Text && body && body !== null && typeof body !== 'string') {
+      body = JSON.stringify(body);
+    }
+
+    return this.instance
+      .request({
+        ...requestParams,
+        headers: {
+          ...(requestParams.headers || {}),
+          ...(type ? { 'Content-Type': type } : {}),
+        },
+        params: query,
+        responseType: responseFormat,
+        data: body,
+        url: path,
+      })
+      .then((response) => response.data);
+  };
+}
+
+/**
+ * @title Tapestry API Reference
+ * @version 1.0.0
+ * @baseUrl https://api.usetapestry.dev/api/v1
+ *
+ * Documentation for all routes in the API
+ */
+export class SocialFi<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+  profiles = {
+    /**
+     * @description For creating a user profile. The endpoint will first check to see if the wallet exists elsewhere on the graph. If it does, we will create a new profile that is namespaced to your app and associate with the wallet you pass in. If the wallet does not yet exist, we will create a node for the wallet, a node for the profile (namespaced to your app) and an edge indicating that the wallet you passed in is associated with the profile on your app.
+     *
+     * @tags Profiles
+     * @name FindOrCreateCreate
+     * @summary Find or create a profile
+     * @request POST:/profiles/findOrCreate
+     */
+    findOrCreateCreate: (
+      query: FindOrCreateCreateParams,
+      data: FindOrCreateProfileSchema,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        FindOrCreateCreateData,
+        {
+          error: string;
+        }
+      >({
+        path: `/profiles/findOrCreate`,
+        method: 'POST',
+        query: query,
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Profiles
+     * @name ProfilesList
+     * @summary Get profiles
+     * @request GET:/profiles/
+     */
+    profilesList: (query: ProfilesListParams, params: RequestParams = {}) =>
+      this.request<
+        ProfilesListData,
+        {
+          error: string;
+        }
+      >({
+        path: `/profiles/`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get comprehensive profile information including node details and follower/following counts
+     *
+     * @tags Profiles
+     * @name ProfilesDetail
+     * @summary Find a profile
+     * @request GET:/profiles/{id}
+     */
+    profilesDetail: ({ id, ...query }: ProfilesDetailParams, params: RequestParams = {}) =>
+      this.request<
+        ProfilesDetailData,
+        {
+          error: string;
+        }
+      >({
+        path: `/profiles/${id}`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Profiles
+     * @name ProfilesUpdate
+     * @summary Update a profile
+     * @request PUT:/profiles/{id}
+     */
+    profilesUpdate: (
+      { id, ...query }: ProfilesUpdateParams,
+      data: UpdateProfileSchema,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        ProfilesUpdateData,
+        {
+          error: string;
+        }
+      >({
+        path: `/profiles/${id}`,
+        method: 'PUT',
+        query: query,
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get a list of profiles that follow a user
+     *
+     * @tags Profiles
+     * @name FollowersDetail
+     * @summary Get followers
+     * @request GET:/profiles/{id}/followers
+     */
+    followersDetail: ({ id, ...query }: FollowersDetailParams, params: RequestParams = {}) =>
+      this.request<
+        FollowersDetailData,
+        {
+          error: string;
+        }
+      >({
+        path: `/profiles/${id}/followers`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get a list of profiles that a user follows
+     *
+     * @tags Profiles
+     * @name FollowingDetail
+     * @summary Get following
+     * @request GET:/profiles/{id}/following
+     */
+    followingDetail: ({ id, ...query }: FollowingDetailParams, params: RequestParams = {}) =>
+      this.request<
+        FollowingDetailData,
+        {
+          error: string;
+        }
+      >({
+        path: `/profiles/${id}/following`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Helpful for creating UIs like "this user is followed by {number} other users you follow"
+     *
+     * @tags Profiles
+     * @name FollowingWhoFollowDetail
+     * @summary Get a list of profiles in a user's network that also follow a given profile
+     * @request GET:/profiles/{id}/following-who-follow
+     */
+    followingWhoFollowDetail: (
+      { id, ...query }: FollowingWhoFollowDetailParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        FollowingWhoFollowDetailData,
+        {
+          error: string;
+        }
+      >({
+        path: `/profiles/${id}/following-who-follow`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Helpful for populating UIs like "people you may know"
+     *
+     * @tags Profiles
+     * @name SuggestedDetail
+     * @summary Get suggested profiles to follow
+     * @request GET:/profiles/suggested/{identifier}
+     */
+    suggestedDetail: (
+      { identifier, ...query }: SuggestedDetailParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        SuggestedDetailData,
+        {
+          error: string;
+        }
+      >({
+        path: `/profiles/suggested/${identifier}`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Profiles
+     * @name SuggestedGlobalDetail
+     * @summary Get suggested profiles to invite
+     * @request GET:/profiles/suggested/{identifier}/global
+     */
+    suggestedGlobalDetail: (
+      { identifier, ...query }: SuggestedGlobalDetailParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        SuggestedGlobalDetailData,
+        {
+          error: string;
+        }
+      >({
+        path: `/profiles/suggested/${identifier}/global`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Retrieve all referral connections for a user profile, including both users who made referrals (upstream) and users who were referred (downstream) by this profile, with depth indicating the number of connection levels (defaults to 2, maximum 6). For example, depth=1 shows direct referrals, while depth=2 includes referrals made by those direct referrals.
+     *
+     * @tags Profiles
+     * @name ReferralsDetail
+     * @summary Retrieve referrals
+     * @request GET:/profiles/{id}/referrals
+     */
+    referralsDetail: ({ id, ...query }: ReferralsDetailParams, params: RequestParams = {}) =>
+      this.request<
+        ReferralsDetailData,
+        {
+          error: string;
+        }
+      >({
+        path: `/profiles/${id}/referrals`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get a list of profiles in the namespace that own a specific token. Optionally filter to only show profiles that the requesting user follows.
+     *
+     * @tags Profiles
+     * @name TokenOwnersDetail
+     * @summary Get profiles that own a specific token
+     * @request GET:/profiles/token-owners/{tokenAddress}
+     */
+    tokenOwnersDetail: (
+      { tokenAddress, ...query }: TokenOwnersDetailParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        TokenOwnersDetailData,
+        {
+          error: string;
+        }
+      >({
+        path: `/profiles/token-owners/${tokenAddress}`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+  };
+  followers = {
+    /**
+     * No description
+     *
+     * @tags Followers
+     * @name PostFollowers
+     * @summary Follow a profile
+     * @request POST:/followers/add
+     */
+    postFollowers: (
+      query: PostFollowersParams,
+      data: CreateFollowSchema,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        PostFollowersData,
+        {
+          error: string;
+        }
+      >({
+        path: `/followers/add`,
+        method: 'POST',
+        query: query,
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Followers
+     * @name RemoveCreate
+     * @summary Unfollow a profile
+     * @request POST:/followers/remove
+     */
+    removeCreate: (
+      query: RemoveCreateParams,
+      data: DeleteFollowSchema,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        RemoveCreateData,
+        {
+          error: string;
+        }
+      >({
+        path: `/followers/remove`,
+        method: 'POST',
+        query: query,
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Verifies if exists a FOLLOW edge between the startId and endId passed as query params.
+     *
+     * @tags Followers
+     * @name StateList
+     * @summary Is following a profile.
+     * @request GET:/followers/state
+     */
+    stateList: (query: StateListParams, params: RequestParams = {}) =>
+      this.request<
+        StateListData,
+        {
+          error: string;
+        }
+      >({
+        path: `/followers/state`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+  };
+  contents = {
+    /**
+     * @description Filter and sort data using optional query parameters: 'filterField' with 'filterValue' to search by property (searches for null values if filterValue is omitted), 'requireFields' for a comma-separated list of properties that must not be null in results, and 'orderByField' with 'orderByDirection' (asc/desc) to sort the results.
+     *
+     * @tags Contents
+     * @name ContentsList
+     * @summary Get contents
+     * @request GET:/contents/
+     */
+    contentsList: (query: ContentsListParams, params: RequestParams = {}) =>
+      this.request<
+        ContentsListData,
+        {
+          error: string;
+        }
+      >({
+        path: `/contents/`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Contents
+     * @name ContentsDetail
+     * @summary Get content by id
+     * @request GET:/contents/{id}
+     */
+    contentsDetail: ({ id, ...query }: ContentsDetailParams, params: RequestParams = {}) =>
+      this.request<
+        ContentsDetailData,
+        {
+          error: string;
+        }
+      >({
+        path: `/contents/${id}`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Contents
+     * @name ContentsUpdate
+     * @summary Update content
+     * @request PUT:/contents/{id}
+     */
+    contentsUpdate: (
+      { id, ...query }: ContentsUpdateParams,
+      data: UpdateContentSchema,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        ContentsUpdateData,
+        {
+          error: string;
+        }
+      >({
+        path: `/contents/${id}`,
+        method: 'PUT',
+        query: query,
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Contents
+     * @name ContentsDelete
+     * @summary Delete content
+     * @request DELETE:/contents/{id}
+     */
+    contentsDelete: ({ id, ...query }: ContentsDeleteParams, params: RequestParams = {}) =>
+      this.request<
+        ContentsDeleteData,
+        {
+          error: string;
+        }
+      >({
+        path: `/contents/${id}`,
+        method: 'DELETE',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Contents
+     * @name FindOrCreateCreate
+     * @summary Find or create content
+     * @request POST:/contents/findOrCreate
+     */
+    findOrCreateCreate: (
+      query: FindOrCreateCreateParams2,
+      data: FindOrCreateContentSchema,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        FindOrCreateCreateResult,
+        {
+          error: string;
+        }
+      >({
+        path: `/contents/findOrCreate`,
+        method: 'POST',
+        query: query,
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Contents
+     * @name BatchReadCreate
+     * @summary Get multiple contents
+     * @request POST:/contents/batch/read
+     */
+    batchReadCreate: (query: BatchReadCreateParams, data: string[], params: RequestParams = {}) =>
+      this.request<
+        BatchReadCreateData,
+        {
+          error: string;
+        }
+      >({
+        path: `/contents/batch/read`,
+        method: 'POST',
+        query: query,
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+  };
+  comments = {
+    /**
+     * @description must filter by author (profileId), content (contentId), or target profile (targetProfileId)
+     *
+     * @tags Comments
+     * @name CommentsList
+     * @summary Get comments
+     * @request GET:/comments/
+     */
+    commentsList: (query: CommentsListParams, params: RequestParams = {}) =>
+      this.request<
+        CommentsListData,
+        {
+          error: string;
+        }
+      >({
+        path: `/comments/`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Comments
+     * @name CommentsCreate
+     * @summary Create comment
+     * @request POST:/comments/
+     */
+    commentsCreate: (
+      query: CommentsCreateParams,
+      data: CreateCommentSchema,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        CommentsCreateData,
+        {
+          error: string;
+        }
+      >({
+        path: `/comments/`,
+        method: 'POST',
+        query: query,
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Comments
+     * @name CommentsDetail
+     * @summary Get comment details
+     * @request GET:/comments/{id}
+     */
+    commentsDetail: ({ id, ...query }: CommentsDetailParams, params: RequestParams = {}) =>
+      this.request<
+        CommentsDetailData,
+        {
+          error: string;
+        }
+      >({
+        path: `/comments/${id}`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Comments
+     * @name CommentsUpdate
+     * @summary Update comment
+     * @request PUT:/comments/{id}
+     */
+    commentsUpdate: (
+      { id, ...query }: CommentsUpdateParams,
+      data: UpdateCommentSchema,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        CommentsUpdateData,
+        {
+          error: string;
+        }
+      >({
+        path: `/comments/${id}`,
+        method: 'PUT',
+        query: query,
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Comments
+     * @name CommentsDelete
+     * @summary Delete comment
+     * @request DELETE:/comments/{id}
+     */
+    commentsDelete: ({ id, ...query }: CommentsDeleteParams, params: RequestParams = {}) =>
+      this.request<
+        CommentsDeleteData,
+        {
+          error: string;
+        }
+      >({
+        path: `/comments/${id}`,
+        method: 'DELETE',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Comments
+     * @name RepliesDetail
+     * @summary Get comment replies
+     * @request GET:/comments/{id}/replies
+     */
+    repliesDetail: ({ id, ...query }: RepliesDetailParams, params: RequestParams = {}) =>
+      this.request<
+        RepliesDetailData,
+        {
+          error: string;
+        }
+      >({
+        path: `/comments/${id}/replies`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Comments
+     * @name BatchReadCreate
+     * @summary Get multiple comment details
+     * @request POST:/comments/batch/read
+     */
+    batchReadCreate: (query: BatchReadCreateParams2, data: string[], params: RequestParams = {}) =>
+      this.request<
+        BatchReadCreateResult,
+        {
+          error: string;
+        }
+      >({
+        path: `/comments/batch/read`,
+        method: 'POST',
+        query: query,
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+  };
+  likes = {
+    /**
+     * No description
+     *
+     * @tags Likes
+     * @name LikesCreate
+     * @summary Create like
+     * @request POST:/likes/{nodeId}
+     */
+    likesCreate: (
+      { nodeId, ...query }: LikesCreateParams,
+      data: CreateLikeSchema,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        LikesCreateData,
+        {
+          error: string;
+        }
+      >({
+        path: `/likes/${nodeId}`,
+        method: 'POST',
+        query: query,
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Likes
+     * @name LikesDelete
+     * @summary Remove like
+     * @request DELETE:/likes/{nodeId}
+     */
+    likesDelete: (
+      { nodeId, ...query }: LikesDeleteParams,
+      data: DeleteLikeSchema,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        LikesDeleteData,
+        {
+          error: string;
+        }
+      >({
+        path: `/likes/${nodeId}`,
+        method: 'DELETE',
+        query: query,
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+  };
+  wallets = {
+    /**
+     * No description
+     *
+     * @tags Wallets
+     * @name SocialCountsDetail
+     * @summary Get socials counts for a given wallet
+     * @request GET:/wallets/{address}/socialCounts
+     */
+    socialCountsDetail: (
+      { address, ...query }: SocialCountsDetailParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        SocialCountsDetailData,
+        {
+          error: string;
+        }
+      >({
+        path: `/wallets/${address}/socialCounts`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+  };
+  search = {
+    /**
+     * @description Search for profiles by id or username
+     *
+     * @tags Search
+     * @name ProfilesList
+     * @summary Search profiles
+     * @request GET:/search/profiles
+     */
+    profilesList: (query: ProfilesListParams2, params: RequestParams = {}) =>
+      this.request<
+        ProfilesListResult,
+        {
+          error: string;
+        }
+      >({
+        path: `/search/profiles`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+  };
+  notifications = {
+    /**
+     * @description only supports wallet notifications for now. recipient must be a wallet address
+     *
+     * @tags Notifications
+     * @name NotificationsCreate
+     * @summary Send a notification
+     * @request POST:/notifications/
+     */
+    notificationsCreate: (
+      query: NotificationsCreateParams,
+      data: WalletNotificationSchema,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        NotificationsCreateData,
+        {
+          error: string;
+        }
+      >({
+        path: `/notifications/`,
+        method: 'POST',
+        query: query,
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+  };
+  activity = {
+    /**
+     * @description Get activity feed for a user including follows, content, likes, comments and new followers
+     *
+     * @tags Activity
+     * @name FeedList
+     * @summary Get activity feed
+     * @request GET:/activity/feed
+     */
+    feedList: (query: FeedListParams, params: RequestParams = {}) =>
+      this.request<
+        FeedListData,
+        {
+          error: string;
+        }
+      >({
+        path: `/activity/feed`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get swap transactions from wallets that the user follows or for a specific token
+     *
+     * @tags Activity
+     * @name SwapList
+     * @summary Get swap activity from followed wallets or specific token
+     * @request GET:/activity/swap
+     */
+    swapList: (query: SwapListParams, params: RequestParams = {}) =>
+      this.request<
+        SwapListData,
+        {
+          error: string;
+        }
+      >({
+        path: `/activity/swap`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+  };
+  identities = {
+    /**
+     * @description Retrieves all connected wallets/contacts associated with a specified wallet/contact. For each wallet/contact, returns up to 5 profiles. To retrieve the complete list of profiles for a specific wallet/contact, use the /identities/{id}/profiles endpoint
+     *
+     * @tags Identities
+     * @name IdentitiesDetail
+     * @summary Finds connected wallets/contacts from an id. this id should be a wallet address or a contact id. when using a contact id, specify the contactType via query params
+     * @request GET:/identities/{id}
+     */
+    identitiesDetail: ({ id, ...query }: IdentitiesDetailParams, params: RequestParams = {}) =>
+      this.request<
+        IdentitiesDetailData,
+        {
+          error: string;
+        }
+      >({
+        path: `/identities/${id}`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description This endpoint retrieves all profiles that were created by a specific wallet/contact.
+     *
+     * @tags Identities
+     * @name ProfilesDetail
+     * @summary Finds associated profiles across namespaces using a wallet address or a contact id. when using a contact id, specify the contactType via query params
+     * @request GET:/identities/{id}/profiles
+     */
+    profilesDetail: ({ id, ...query }: ProfilesDetailParams2, params: RequestParams = {}) =>
+      this.request<
+        ProfilesDetailResult,
+        {
+          error: string;
+        }
+      >({
+        path: `/identities/${id}/profiles`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+  };
+}

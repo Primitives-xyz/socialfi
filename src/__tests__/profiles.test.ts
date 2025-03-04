@@ -1,4 +1,4 @@
-import { SocialFi } from '../socialfi';
+import { SocialFi } from '../api';
 
 const BASE_URL = 'https://api.fortests.dev/api/v1';
 
@@ -54,7 +54,7 @@ describe('TapestryClient Profiles', () => {
       );
 
       // Verify the response
-      expect(result.data).toEqual({
+      expect(result).toEqual({
         profile: {
           id: 'test-id',
           namespace: 'test-namespace',

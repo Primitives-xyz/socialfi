@@ -18,7 +18,7 @@
     "lint": "eslint src --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "prepublishOnly": "npm run build",
-    "generate": "swagger-typescript-api -p https://api.usetapestry.dev/docs.json -o ./src -n api.ts --name SocialFi --api-class-name SocialFi  --modular  --axios --unwrap-response-data --extract-request-params --extract-response-body"
+    "generate": "swagger-typescript-api -p https://api.usetapestry.dev/docs.json -o ./src -n api.ts --api-class-name SocialFi  --axios --unwrap-response-data --extract-request-params --extract-response-body"
   },
   "keywords": [
     "tapestry",
