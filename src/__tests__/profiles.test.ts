@@ -1,4 +1,8 @@
 import { SocialFi } from '../api';
+import axios, { HeadersDefaults } from 'axios';
+
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const BASE_URL = 'https://api.fortests.dev/api/v1';
 
@@ -6,50 +10,66 @@ describe('TapestryClient Profiles', () => {
   beforeEach(() => {
     // Clear all mocks before each test
     jest.clearAllMocks();
+
+    // Mock axios.create to return a mocked instance
+    mockedAxios.create.mockReturnValue(mockedAxios);
   });
 
   describe('findOrCreateCreate', () => {
     it('should call the API with correct parameters and return the profile', async () => {
-      // Mock the fetch response with proper Response object
-      global.fetch = jest.fn().mockImplementation(() =>
-        Promise.resolve(
-          new Response(
-            JSON.stringify({
-              profile: {
-                id: 'test-id',
-                namespace: 'test-namespace',
-                created_at: Date.now(),
-                username: 'test-profile-a',
-              },
-            }),
-            {
-              status: 200,
-              headers: { 'Content-Type': 'application/json' },
-            },
-          ),
-        ),
-      );
-
-      const client = new SocialFi({
-        baseUrl: BASE_URL,
+      // Mock axios response
+      mockedAxios.request.mockResolvedValue({
+        data: {
+          profile: {
+            id: 'test-id',
+            namespace: 'test-namespace',
+            created_at: Date.now(),
+            username: 'test-profile-a',
+          },
+        },
+        status: 200,
+        statusText: 'OK',
+        headers: { 'content-type': 'application/json' },
+        config: {},
       });
 
-      const apiKey = 'test-api-key';
+      // Set up default headers that would normally be set by axios
+      mockedAxios.defaults = {
+        headers: {
+          common: { Accept: 'application/json' },
+          delete: {},
+          get: {},
+          head: {},
+          post: { 'Content-Type': 'application/json' },
+          put: { 'Content-Type': 'application/json' },
+          patch: { 'Content-Type': 'application/json' },
+        } as HeadersDefaults & { [key: string]: any },
+      };
+
+      const client = new SocialFi({
+        baseURL: BASE_URL,
+      });
+
       const profileData = {
         username: 'test-profile-a',
       };
 
-      const result = await client.profiles.findOrCreateCreate({ apiKey }, profileData);
+      const result = await client.profiles.findOrCreateCreate(
+        { apiKey: 'test-api-key' },
+        profileData,
+      );
 
-      // Verify the API was called with correct parameters
-      expect(global.fetch).toHaveBeenCalledWith(
-        `${BASE_URL}/profiles/findOrCreate?apiKey=test-api-key`,
+      // Verify axios was called with correct parameters
+      expect(mockedAxios.request).toHaveBeenCalledWith(
         expect.objectContaining({
+          url: '/profiles/findOrCreate',
           method: 'POST',
-          body: JSON.stringify(profileData),
+          params: { apiKey: 'test-api-key' },
+          data: profileData,
           headers: expect.objectContaining({
             'Content-Type': 'application/json',
           }),
+          responseType: 'json',
         }),
       );
 
