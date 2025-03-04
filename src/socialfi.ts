@@ -1286,357 +1286,10 @@ export interface ProfileIdentityResponseSchema {
   pageSize: number;
 }
 
-export interface FindOrCreateCreateParams {
-  apiKey: string;
-}
-
-export type FindOrCreateCreateData = FindOrCreateResponseSchema;
-
-export interface ProfilesListParams {
-  apiKey: string;
-  /** @minLength 32 */
-  walletAddress?: string;
-  phoneNumber?: string;
-  page?: string;
-  pageSize?: string;
-  /** @default "created_at" */
-  sortBy?: string;
-  /** @default "DESC" */
-  sortDirection?: 'ASC' | 'DESC';
-}
-
-export type ProfilesListData = GetProfilesResponseSchema;
-
-export interface ProfilesDetailParams {
-  apiKey: string;
-  /** The id of the start profile. */
-  id: string;
-}
-
-export type ProfilesDetailData = GetProfileDetailsSchema;
-
-export interface ProfilesUpdateParams {
-  apiKey: string;
-  id: string;
-}
-
-export type ProfilesUpdateData = ProfileSchema;
-
-export interface FollowersDetailParams {
-  apiKey: string;
-  page?: string;
-  pageSize?: string;
-  id: string;
-}
-
-export type FollowersDetailData = GetProfileFollowersResponseSchema;
-
-export interface FollowingDetailParams {
-  apiKey: string;
-  page?: string;
-  pageSize?: string;
-  id: string;
-}
-
-export type FollowingDetailData = GetProfileFollowingResponseSchema;
-
-export interface FollowingWhoFollowDetailParams {
-  apiKey: string;
-  requestorId: string;
-  page?: string;
-  pageSize?: string;
-  id: string;
-}
-
-export type FollowingWhoFollowDetailData = GetProfileFollowingWhoFollowResponseSchema;
-
-export interface SuggestedDetailParams {
-  apiKey: string;
-  /** @default "PHONE" */
-  contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
-  /** should either be a wallet address (default) or a contact id. when using contact ids, specify the contactType via query params */
-  identifier: string;
-}
-
-export type SuggestedDetailData = Record<
-  string,
-  {
-    namespaces: {
-      name: string | null;
-      readableName: string | null;
-      faviconURL: string | null;
-      userProfileURL: string | null;
-    }[];
-    profile: {
-      id: string;
-      namespace: string;
-      created_at: number;
-      username: string;
-      bio?: string | null;
-      image?: string | null;
-    };
-    wallet?: {
-      address: string;
-    };
-    contact?: {
-      /** @minLength 1 */
-      id: string;
-      type: 'EMAIL' | 'PHONE' | 'TWITTER';
-      /** only available for x contact types */
-      bio?: string;
-      /** only available for x contact types */
-      image?: string;
-    };
-  }
->;
-
-export interface SuggestedGlobalDetailParams {
-  apiKey: string;
-  /** @default "PHONE" */
-  contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
-  /** should either be a wallet address (default) or a contact id. when using contact ids, specify the contactType via query params */
-  identifier: string;
-}
-
-export type SuggestedGlobalDetailData = SuggestedProfilesToInvite[];
-
-export interface ReferralsDetailParams {
-  apiKey: string;
-  /** Optional filter to specify the depth of upstream referral connections (profiles that referred this user). Defaults to 2 if no value is specified. */
-  upstream?: string;
-  /** Optional filter to specify the depth of downstream referral connections (profiles referred by this user). Defaults to 2 if no value is specified. */
-  downstream?: string;
-  id: string;
-}
-
-export type ReferralsDetailData = ReferralProfilesSchema;
-
-export interface TokenOwnersDetailParams {
-  apiKey: string;
-  requestorId?: string;
-  page?: string;
-  pageSize?: string;
-  tokenAddress: string;
-}
-
-export type TokenOwnersDetailData = ITokenHoldersResponseSchema;
-
-export interface PostFollowersParams {
-  apiKey: string;
-}
-
-export type PostFollowersData = object;
-
-export interface RemoveCreateParams {
-  apiKey: string;
-}
-
-export type RemoveCreateData = object;
-
-export interface StateListParams {
-  apiKey: string;
-  startId: string;
-  endId: string;
-}
-
-export type StateListData = IsFollowingSchema;
-
-export interface ContentsListParams {
-  apiKey: string;
-  orderByField?: string;
-  orderByDirection?: 'ASC' | 'DESC';
-  requireFields?: string;
-  filterField?: string;
-  filterValue?: string;
-  page?: string;
-  pageSize?: string;
-  profileId?: string;
-  requestingProfileId?: string;
-  namespace?: 'primitives';
-}
-
-export type ContentsListData = GetContestsResponseSchema;
-
-export interface ContentsDetailParams {
-  apiKey: string;
-  requestingProfileId?: string;
-  id: string;
-}
-
-export type ContentsDetailData = ContentDetailsSchema;
-
-export interface ContentsUpdateParams {
-  apiKey: string;
-  id: string;
-}
-
-export type ContentsUpdateData = ContentSchema;
-
-export interface ContentsDeleteParams {
-  apiKey: string;
-  id: string;
-}
-
-export type ContentsDeleteData = object;
-
-export interface FindOrCreateCreateParams2 {
-  apiKey: string;
-}
-
-export type FindOrCreateCreateResult = ContentSchema;
-
-export interface BatchReadCreateParams {
-  apiKey: string;
-}
-
-export type BatchReadCreateData = GetBatchContentsResponseSchema;
-
-export interface CommentsListParams {
-  apiKey: string;
-  contentId?: string;
-  profileId?: string;
-  targetProfileId?: string;
-  page?: string;
-  pageSize?: string;
-  requestingProfileId?: string;
-}
-
-export type CommentsListData = GetCommentsResponseSchema;
-
-export interface CommentsCreateParams {
-  apiKey: string;
-}
-
-export type CommentsCreateData = CommentSchema;
-
-export interface CommentsDetailParams {
-  apiKey: string;
-  requestingProfileId?: string;
-  id: string;
-}
-
-export type CommentsDetailData = CommentDetailsWithRepliesSchema;
-
-export interface CommentsUpdateParams {
-  apiKey: string;
-  id: string;
-}
-
-export type CommentsUpdateData = CommentSchema;
-
-export interface CommentsDeleteParams {
-  apiKey: string;
-  id: string;
-}
-
-export type CommentsDeleteData = object;
-
-export interface RepliesDetailParams {
-  apiKey: string;
-  page?: string;
-  pageSize?: string;
-  requestingProfileId?: string;
-  id: string;
-}
-
-export type RepliesDetailData = GetCommentsResponseSchema;
-
-export interface BatchReadCreateParams2 {
-  apiKey: string;
-}
-
-export type BatchReadCreateResult = GetBatchCommentsResponseSchema;
-
-export interface LikesCreateParams {
-  apiKey: string;
-  nodeId: string;
-}
-
-export type LikesCreateData = object;
-
-export interface LikesDeleteParams {
-  apiKey: string;
-  nodeId: string;
-}
-
-export type LikesDeleteData = object;
-
-export interface SocialCountsDetailParams {
-  apiKey: string;
-  address: string;
-}
-
-export type SocialCountsDetailData = FollowCountsSchema;
-
-export interface ProfilesListParams2 {
-  apiKey: string;
-  query: string;
-  /** @default "false" */
-  includeExternalProfiles?: string;
-  page?: string;
-  pageSize?: string;
-}
-
-export type ProfilesListResult = SearchProfilesResponseSchema;
-
-export interface NotificationsCreateParams {
-  apiKey: string;
-}
-
-export type NotificationsCreateData = object;
-
-export interface FeedListParams {
-  apiKey: string;
-  username: string;
-  page?: string;
-  pageSize?: string;
-}
-
-export type FeedListData = GetActivityFeedResponseSchema;
-
-export interface SwapListParams {
-  apiKey: string;
-  username?: string;
-  page?: string;
-  pageSize?: string;
-  tokenAddress?: string;
-}
-
-export type SwapListData = GetSwapActivityResponseSchema;
-
-export interface IdentitiesDetailParams {
-  apiKey: string;
-  /** @default "PHONE" */
-  contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
-  page?: string;
-  pageSize?: string;
-  id: string;
-}
-
-export type IdentitiesDetailData = ProfileIdentityResponseSchema;
-
-export interface ProfilesDetailParams2 {
-  apiKey: string;
-  /** @default "PHONE" */
-  contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
-  page?: string;
-  pageSize?: string;
-  /** @default "created_at" */
-  sortBy?: string;
-  /** @default "DESC" */
-  sortDirection?: 'ASC' | 'DESC';
-  id: string;
-}
-
-export type ProfilesDetailResult = GetProfilesResponseSchema;
-
-import type { AxiosInstance, AxiosRequestConfig, HeadersDefaults, ResponseType } from 'axios';
-import axios from 'axios';
-
 export type QueryParamsType = Record<string | number, any>;
+export type ResponseFormat = keyof Omit<Body, 'body' | 'bodyUsed'>;
 
-export interface FullRequestParams
-  extends Omit<AxiosRequestConfig, 'data' | 'params' | 'url' | 'responseType'> {
+export interface FullRequestParams extends Omit<RequestInit, 'body'> {
   /** set parameter to `true` for call `securityWorker` for this request */
   secure?: boolean;
   /** request path */
@@ -1646,21 +1299,32 @@ export interface FullRequestParams
   /** query params */
   query?: QueryParamsType;
   /** format of response (i.e. response.json() -> format: "json") */
-  format?: ResponseType;
+  format?: ResponseFormat;
   /** request body */
   body?: unknown;
+  /** base url */
+  baseUrl?: string;
+  /** request cancellation token */
+  cancelToken?: CancelToken;
 }
 
 export type RequestParams = Omit<FullRequestParams, 'body' | 'method' | 'query' | 'path'>;
 
-export interface ApiConfig<SecurityDataType = unknown>
-  extends Omit<AxiosRequestConfig, 'data' | 'cancelToken'> {
+export interface ApiConfig<SecurityDataType = unknown> {
+  baseUrl?: string;
+  baseApiParams?: Omit<RequestParams, 'baseUrl' | 'cancelToken' | 'signal'>;
   securityWorker?: (
     securityData: SecurityDataType | null,
-  ) => Promise<AxiosRequestConfig | void> | AxiosRequestConfig | void;
-  secure?: boolean;
-  format?: ResponseType;
+  ) => Promise<RequestParams | void> | RequestParams | void;
+  customFetch?: typeof fetch;
 }
+
+export interface HttpResponse<D extends unknown, E extends unknown = unknown> extends Response {
+  data: D;
+  error: E;
+}
+
+type CancelToken = Symbol | string | number;
 
 export enum ContentType {
   Json = 'application/json',
@@ -1670,114 +1334,177 @@ export enum ContentType {
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public instance: AxiosInstance;
+  public baseUrl: string = 'https://api.usetapestry.dev/api/v1';
   private securityData: SecurityDataType | null = null;
   private securityWorker?: ApiConfig<SecurityDataType>['securityWorker'];
-  private secure?: boolean;
-  private format?: ResponseType;
+  private abortControllers = new Map<CancelToken, AbortController>();
+  private customFetch = (...fetchParams: Parameters<typeof fetch>) => fetch(...fetchParams);
 
-  constructor({
-    securityWorker,
-    secure,
-    format,
-    ...axiosConfig
-  }: ApiConfig<SecurityDataType> = {}) {
-    this.instance = axios.create({
-      ...axiosConfig,
-      baseURL: axiosConfig.baseURL || 'https://api.usetapestry.dev/api/v1',
-    });
-    this.secure = secure;
-    this.format = format;
-    this.securityWorker = securityWorker;
+  private baseApiParams: RequestParams = {
+    credentials: 'same-origin',
+    headers: {},
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer',
+  };
+
+  constructor(apiConfig: ApiConfig<SecurityDataType> = {}) {
+    Object.assign(this, apiConfig);
   }
 
   public setSecurityData = (data: SecurityDataType | null) => {
     this.securityData = data;
   };
 
-  protected mergeRequestParams(
-    params1: AxiosRequestConfig,
-    params2?: AxiosRequestConfig,
-  ): AxiosRequestConfig {
-    const method = params1.method || (params2 && params2.method);
+  protected encodeQueryParam(key: string, value: any) {
+    const encodedKey = encodeURIComponent(key);
+    return `${encodedKey}=${encodeURIComponent(typeof value === 'number' ? value : `${value}`)}`;
+  }
 
+  protected addQueryParam(query: QueryParamsType, key: string) {
+    return this.encodeQueryParam(key, query[key]);
+  }
+
+  protected addArrayQueryParam(query: QueryParamsType, key: string) {
+    const value = query[key];
+    return value.map((v: any) => this.encodeQueryParam(key, v)).join('&');
+  }
+
+  protected toQueryString(rawQuery?: QueryParamsType): string {
+    const query = rawQuery || {};
+    const keys = Object.keys(query).filter((key) => 'undefined' !== typeof query[key]);
+    return keys
+      .map((key) =>
+        Array.isArray(query[key])
+          ? this.addArrayQueryParam(query, key)
+          : this.addQueryParam(query, key),
+      )
+      .join('&');
+  }
+
+  protected addQueryParams(rawQuery?: QueryParamsType): string {
+    const queryString = this.toQueryString(rawQuery);
+    return queryString ? `?${queryString}` : '';
+  }
+
+  private contentFormatters: Record<ContentType, (input: any) => any> = {
+    [ContentType.Json]: (input: any) =>
+      input !== null && (typeof input === 'object' || typeof input === 'string')
+        ? JSON.stringify(input)
+        : input,
+    [ContentType.Text]: (input: any) =>
+      input !== null && typeof input !== 'string' ? JSON.stringify(input) : input,
+    [ContentType.FormData]: (input: any) =>
+      Object.keys(input || {}).reduce((formData, key) => {
+        const property = input[key];
+        formData.append(
+          key,
+          property instanceof Blob
+            ? property
+            : typeof property === 'object' && property !== null
+              ? JSON.stringify(property)
+              : `${property}`,
+        );
+        return formData;
+      }, new FormData()),
+    [ContentType.UrlEncoded]: (input: any) => this.toQueryString(input),
+  };
+
+  protected mergeRequestParams(params1: RequestParams, params2?: RequestParams): RequestParams {
     return {
-      ...this.instance.defaults,
+      ...this.baseApiParams,
       ...params1,
       ...(params2 || {}),
       headers: {
-        ...((method &&
-          this.instance.defaults.headers[method.toLowerCase() as keyof HeadersDefaults]) ||
-          {}),
+        ...(this.baseApiParams.headers || {}),
         ...(params1.headers || {}),
         ...((params2 && params2.headers) || {}),
       },
     };
   }
 
-  protected stringifyFormItem(formItem: unknown) {
-    if (typeof formItem === 'object' && formItem !== null) {
-      return JSON.stringify(formItem);
-    } else {
-      return `${formItem}`;
-    }
-  }
-
-  protected createFormData(input: Record<string, unknown>): FormData {
-    if (input instanceof FormData) {
-      return input;
-    }
-    return Object.keys(input || {}).reduce((formData, key) => {
-      const property = input[key];
-      const propertyContent: any[] = property instanceof Array ? property : [property];
-
-      for (const formItem of propertyContent) {
-        const isFileType = formItem instanceof Blob || formItem instanceof File;
-        formData.append(key, isFileType ? formItem : this.stringifyFormItem(formItem));
+  protected createAbortSignal = (cancelToken: CancelToken): AbortSignal | undefined => {
+    if (this.abortControllers.has(cancelToken)) {
+      const abortController = this.abortControllers.get(cancelToken);
+      if (abortController) {
+        return abortController.signal;
       }
+      return void 0;
+    }
 
-      return formData;
-    }, new FormData());
-  }
+    const abortController = new AbortController();
+    this.abortControllers.set(cancelToken, abortController);
+    return abortController.signal;
+  };
 
-  public request = async <T = any, _E = any>({
+  public abortRequest = (cancelToken: CancelToken) => {
+    const abortController = this.abortControllers.get(cancelToken);
+
+    if (abortController) {
+      abortController.abort();
+      this.abortControllers.delete(cancelToken);
+    }
+  };
+
+  public request = async <T = any, E = any>({
+    body,
     secure,
     path,
     type,
     query,
     format,
-    body,
+    baseUrl,
+    cancelToken,
     ...params
-  }: FullRequestParams): Promise<T> => {
+  }: FullRequestParams): Promise<HttpResponse<T, E>> => {
     const secureParams =
-      ((typeof secure === 'boolean' ? secure : this.secure) &&
+      ((typeof secure === 'boolean' ? secure : this.baseApiParams.secure) &&
         this.securityWorker &&
         (await this.securityWorker(this.securityData))) ||
       {};
     const requestParams = this.mergeRequestParams(params, secureParams);
-    const responseFormat = format || this.format || undefined;
+    const queryString = query && this.toQueryString(query);
+    const payloadFormatter = this.contentFormatters[type || ContentType.Json];
+    const responseFormat = format || requestParams.format;
 
-    if (type === ContentType.FormData && body && body !== null && typeof body === 'object') {
-      body = this.createFormData(body as Record<string, unknown>);
-    }
-
-    if (type === ContentType.Text && body && body !== null && typeof body !== 'string') {
-      body = JSON.stringify(body);
-    }
-
-    return this.instance
-      .request({
+    return this.customFetch(
+      `${baseUrl || this.baseUrl || ''}${path}${queryString ? `?${queryString}` : ''}`,
+      {
         ...requestParams,
         headers: {
           ...(requestParams.headers || {}),
-          ...(type ? { 'Content-Type': type } : {}),
+          ...(type && type !== ContentType.FormData ? { 'Content-Type': type } : {}),
         },
-        params: query,
-        responseType: responseFormat,
-        data: body,
-        url: path,
-      })
-      .then((response) => response.data);
+        signal: (cancelToken ? this.createAbortSignal(cancelToken) : requestParams.signal) || null,
+        body: typeof body === 'undefined' || body === null ? null : payloadFormatter(body),
+      },
+    ).then(async (response) => {
+      const r = response.clone() as HttpResponse<T, E>;
+      r.data = null as unknown as T;
+      r.error = null as unknown as E;
+
+      const data = !responseFormat
+        ? r
+        : await response[responseFormat]()
+            .then((data) => {
+              if (r.ok) {
+                r.data = data;
+              } else {
+                r.error = data;
+              }
+              return r;
+            })
+            .catch((e) => {
+              r.error = e;
+              return r;
+            });
+
+      if (cancelToken) {
+        this.abortControllers.delete(cancelToken);
+      }
+
+      if (!response.ok) throw data;
+      return data;
+    });
   };
 }
 
@@ -1788,7 +1515,7 @@ export class HttpClient<SecurityDataType = unknown> {
  *
  * Documentation for all routes in the API
  */
-export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+export class SocialFi<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   profiles = {
     /**
      * @description For creating a user profile. The endpoint will first check to see if the wallet exists elsewhere on the graph. If it does, we will create a new profile that is namespaced to your app and associate with the wallet you pass in. If the wallet does not yet exist, we will create a node for the wallet, a node for the profile (namespaced to your app) and an edge indicating that the wallet you passed in is associated with the profile on your app.
@@ -1799,12 +1526,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/profiles/findOrCreate
      */
     findOrCreateCreate: (
-      query: FindOrCreateCreateParams,
+      query: {
+        apiKey: string;
+      },
       data: FindOrCreateProfileSchema,
       params: RequestParams = {},
     ) =>
       this.request<
-        FindOrCreateCreateData,
+        FindOrCreateResponseSchema,
         {
           error: string;
         }
@@ -1826,9 +1555,23 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get profiles
      * @request GET:/profiles/
      */
-    profilesList: (query: ProfilesListParams, params: RequestParams = {}) =>
+    profilesList: (
+      query: {
+        apiKey: string;
+        /** @minLength 32 */
+        walletAddress?: string;
+        phoneNumber?: string;
+        page?: string;
+        pageSize?: string;
+        /** @default "created_at" */
+        sortBy?: string;
+        /** @default "DESC" */
+        sortDirection?: 'ASC' | 'DESC';
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
-        ProfilesListData,
+        GetProfilesResponseSchema,
         {
           error: string;
         }
@@ -1848,9 +1591,15 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Find a profile
      * @request GET:/profiles/{id}
      */
-    profilesDetail: ({ id, ...query }: ProfilesDetailParams, params: RequestParams = {}) =>
+    profilesDetail: (
+      id: string,
+      query: {
+        apiKey: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
-        ProfilesDetailData,
+        GetProfileDetailsSchema,
         {
           error: string;
         }
@@ -1871,12 +1620,15 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request PUT:/profiles/{id}
      */
     profilesUpdate: (
-      { id, ...query }: ProfilesUpdateParams,
+      id: string,
+      query: {
+        apiKey: string;
+      },
       data: UpdateProfileSchema,
       params: RequestParams = {},
     ) =>
       this.request<
-        ProfilesUpdateData,
+        ProfileSchema,
         {
           error: string;
         }
@@ -1898,9 +1650,17 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get followers
      * @request GET:/profiles/{id}/followers
      */
-    followersDetail: ({ id, ...query }: FollowersDetailParams, params: RequestParams = {}) =>
+    followersDetail: (
+      id: string,
+      query: {
+        apiKey: string;
+        page?: string;
+        pageSize?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
-        FollowersDetailData,
+        GetProfileFollowersResponseSchema,
         {
           error: string;
         }
@@ -1920,9 +1680,17 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get following
      * @request GET:/profiles/{id}/following
      */
-    followingDetail: ({ id, ...query }: FollowingDetailParams, params: RequestParams = {}) =>
+    followingDetail: (
+      id: string,
+      query: {
+        apiKey: string;
+        page?: string;
+        pageSize?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
-        FollowingDetailData,
+        GetProfileFollowingResponseSchema,
         {
           error: string;
         }
@@ -1943,11 +1711,17 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/profiles/{id}/following-who-follow
      */
     followingWhoFollowDetail: (
-      { id, ...query }: FollowingWhoFollowDetailParams,
+      id: string,
+      query: {
+        apiKey: string;
+        requestorId: string;
+        page?: string;
+        pageSize?: string;
+      },
       params: RequestParams = {},
     ) =>
       this.request<
-        FollowingWhoFollowDetailData,
+        GetProfileFollowingWhoFollowResponseSchema,
         {
           error: string;
         }
@@ -1968,11 +1742,46 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/profiles/suggested/{identifier}
      */
     suggestedDetail: (
-      { identifier, ...query }: SuggestedDetailParams,
+      identifier: string,
+      query: {
+        apiKey: string;
+        /** @default "PHONE" */
+        contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
+      },
       params: RequestParams = {},
     ) =>
       this.request<
-        SuggestedDetailData,
+        Record<
+          string,
+          {
+            namespaces: {
+              name: string | null;
+              readableName: string | null;
+              faviconURL: string | null;
+              userProfileURL: string | null;
+            }[];
+            profile: {
+              id: string;
+              namespace: string;
+              created_at: number;
+              username: string;
+              bio?: string | null;
+              image?: string | null;
+            };
+            wallet?: {
+              address: string;
+            };
+            contact?: {
+              /** @minLength 1 */
+              id: string;
+              type: 'EMAIL' | 'PHONE' | 'TWITTER';
+              /** only available for x contact types */
+              bio?: string;
+              /** only available for x contact types */
+              image?: string;
+            };
+          }
+        >,
         {
           error: string;
         }
@@ -1993,11 +1802,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/profiles/suggested/{identifier}/global
      */
     suggestedGlobalDetail: (
-      { identifier, ...query }: SuggestedGlobalDetailParams,
+      identifier: string,
+      query: {
+        apiKey: string;
+        /** @default "PHONE" */
+        contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
+      },
       params: RequestParams = {},
     ) =>
       this.request<
-        SuggestedGlobalDetailData,
+        SuggestedProfilesToInvite[],
         {
           error: string;
         }
@@ -2017,9 +1831,19 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Retrieve referrals
      * @request GET:/profiles/{id}/referrals
      */
-    referralsDetail: ({ id, ...query }: ReferralsDetailParams, params: RequestParams = {}) =>
+    referralsDetail: (
+      id: string,
+      query: {
+        apiKey: string;
+        /** Optional filter to specify the depth of upstream referral connections (profiles that referred this user). Defaults to 2 if no value is specified. */
+        upstream?: string;
+        /** Optional filter to specify the depth of downstream referral connections (profiles referred by this user). Defaults to 2 if no value is specified. */
+        downstream?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
-        ReferralsDetailData,
+        ReferralProfilesSchema,
         {
           error: string;
         }
@@ -2040,11 +1864,17 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/profiles/token-owners/{tokenAddress}
      */
     tokenOwnersDetail: (
-      { tokenAddress, ...query }: TokenOwnersDetailParams,
+      tokenAddress: string,
+      query: {
+        apiKey: string;
+        requestorId?: string;
+        page?: string;
+        pageSize?: string;
+      },
       params: RequestParams = {},
     ) =>
       this.request<
-        TokenOwnersDetailData,
+        ITokenHoldersResponseSchema,
         {
           error: string;
         }
@@ -2066,12 +1896,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/followers/add
      */
     postFollowers: (
-      query: PostFollowersParams,
+      query: {
+        apiKey: string;
+      },
       data: CreateFollowSchema,
       params: RequestParams = {},
     ) =>
       this.request<
-        PostFollowersData,
+        object,
         {
           error: string;
         }
@@ -2094,12 +1926,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/followers/remove
      */
     removeCreate: (
-      query: RemoveCreateParams,
+      query: {
+        apiKey: string;
+      },
       data: DeleteFollowSchema,
       params: RequestParams = {},
     ) =>
       this.request<
-        RemoveCreateData,
+        object,
         {
           error: string;
         }
@@ -2121,9 +1955,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Is following a profile.
      * @request GET:/followers/state
      */
-    stateList: (query: StateListParams, params: RequestParams = {}) =>
+    stateList: (
+      query: {
+        apiKey: string;
+        startId: string;
+        endId: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
-        StateListData,
+        IsFollowingSchema,
         {
           error: string;
         }
@@ -2144,9 +1985,24 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get contents
      * @request GET:/contents/
      */
-    contentsList: (query: ContentsListParams, params: RequestParams = {}) =>
+    contentsList: (
+      query: {
+        apiKey: string;
+        orderByField?: string;
+        orderByDirection?: 'ASC' | 'DESC';
+        requireFields?: string;
+        filterField?: string;
+        filterValue?: string;
+        page?: string;
+        pageSize?: string;
+        profileId?: string;
+        requestingProfileId?: string;
+        namespace?: 'primitives';
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
-        ContentsListData,
+        GetContestsResponseSchema,
         {
           error: string;
         }
@@ -2166,9 +2022,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get content by id
      * @request GET:/contents/{id}
      */
-    contentsDetail: ({ id, ...query }: ContentsDetailParams, params: RequestParams = {}) =>
+    contentsDetail: (
+      id: string,
+      query: {
+        apiKey: string;
+        requestingProfileId?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
-        ContentsDetailData,
+        ContentDetailsSchema,
         {
           error: string;
         }
@@ -2189,12 +2052,15 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request PUT:/contents/{id}
      */
     contentsUpdate: (
-      { id, ...query }: ContentsUpdateParams,
+      id: string,
+      query: {
+        apiKey: string;
+      },
       data: UpdateContentSchema,
       params: RequestParams = {},
     ) =>
       this.request<
-        ContentsUpdateData,
+        ContentSchema,
         {
           error: string;
         }
@@ -2216,9 +2082,15 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Delete content
      * @request DELETE:/contents/{id}
      */
-    contentsDelete: ({ id, ...query }: ContentsDeleteParams, params: RequestParams = {}) =>
+    contentsDelete: (
+      id: string,
+      query: {
+        apiKey: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
-        ContentsDeleteData,
+        object,
         {
           error: string;
         }
@@ -2239,12 +2111,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/contents/findOrCreate
      */
     findOrCreateCreate: (
-      query: FindOrCreateCreateParams2,
+      query: {
+        apiKey: string;
+      },
       data: FindOrCreateContentSchema,
       params: RequestParams = {},
     ) =>
       this.request<
-        FindOrCreateCreateResult,
+        ContentSchema,
         {
           error: string;
         }
@@ -2266,9 +2140,15 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get multiple contents
      * @request POST:/contents/batch/read
      */
-    batchReadCreate: (query: BatchReadCreateParams, data: string[], params: RequestParams = {}) =>
+    batchReadCreate: (
+      query: {
+        apiKey: string;
+      },
+      data: string[],
+      params: RequestParams = {},
+    ) =>
       this.request<
-        BatchReadCreateData,
+        GetBatchContentsResponseSchema,
         {
           error: string;
         }
@@ -2291,9 +2171,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get comments
      * @request GET:/comments/
      */
-    commentsList: (query: CommentsListParams, params: RequestParams = {}) =>
+    commentsList: (
+      query: {
+        apiKey: string;
+        contentId?: string;
+        profileId?: string;
+        targetProfileId?: string;
+        page?: string;
+        pageSize?: string;
+        requestingProfileId?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
-        CommentsListData,
+        GetCommentsResponseSchema,
         {
           error: string;
         }
@@ -2314,12 +2205,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/comments/
      */
     commentsCreate: (
-      query: CommentsCreateParams,
+      query: {
+        apiKey: string;
+      },
       data: CreateCommentSchema,
       params: RequestParams = {},
     ) =>
       this.request<
-        CommentsCreateData,
+        CommentSchema,
         {
           error: string;
         }
@@ -2341,9 +2234,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get comment details
      * @request GET:/comments/{id}
      */
-    commentsDetail: ({ id, ...query }: CommentsDetailParams, params: RequestParams = {}) =>
+    commentsDetail: (
+      id: string,
+      query: {
+        apiKey: string;
+        requestingProfileId?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
-        CommentsDetailData,
+        CommentDetailsWithRepliesSchema,
         {
           error: string;
         }
@@ -2364,12 +2264,15 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request PUT:/comments/{id}
      */
     commentsUpdate: (
-      { id, ...query }: CommentsUpdateParams,
+      id: string,
+      query: {
+        apiKey: string;
+      },
       data: UpdateCommentSchema,
       params: RequestParams = {},
     ) =>
       this.request<
-        CommentsUpdateData,
+        CommentSchema,
         {
           error: string;
         }
@@ -2391,9 +2294,15 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Delete comment
      * @request DELETE:/comments/{id}
      */
-    commentsDelete: ({ id, ...query }: CommentsDeleteParams, params: RequestParams = {}) =>
+    commentsDelete: (
+      id: string,
+      query: {
+        apiKey: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
-        CommentsDeleteData,
+        object,
         {
           error: string;
         }
@@ -2413,9 +2322,18 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get comment replies
      * @request GET:/comments/{id}/replies
      */
-    repliesDetail: ({ id, ...query }: RepliesDetailParams, params: RequestParams = {}) =>
+    repliesDetail: (
+      id: string,
+      query: {
+        apiKey: string;
+        page?: string;
+        pageSize?: string;
+        requestingProfileId?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
-        RepliesDetailData,
+        GetCommentsResponseSchema,
         {
           error: string;
         }
@@ -2435,9 +2353,15 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get multiple comment details
      * @request POST:/comments/batch/read
      */
-    batchReadCreate: (query: BatchReadCreateParams2, data: string[], params: RequestParams = {}) =>
+    batchReadCreate: (
+      query: {
+        apiKey: string;
+      },
+      data: string[],
+      params: RequestParams = {},
+    ) =>
       this.request<
-        BatchReadCreateResult,
+        GetBatchCommentsResponseSchema,
         {
           error: string;
         }
@@ -2461,12 +2385,15 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/likes/{nodeId}
      */
     likesCreate: (
-      { nodeId, ...query }: LikesCreateParams,
+      nodeId: string,
+      query: {
+        apiKey: string;
+      },
       data: CreateLikeSchema,
       params: RequestParams = {},
     ) =>
       this.request<
-        LikesCreateData,
+        object,
         {
           error: string;
         }
@@ -2489,12 +2416,15 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request DELETE:/likes/{nodeId}
      */
     likesDelete: (
-      { nodeId, ...query }: LikesDeleteParams,
+      nodeId: string,
+      query: {
+        apiKey: string;
+      },
       data: DeleteLikeSchema,
       params: RequestParams = {},
     ) =>
       this.request<
-        LikesDeleteData,
+        object,
         {
           error: string;
         }
@@ -2518,11 +2448,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/wallets/{address}/socialCounts
      */
     socialCountsDetail: (
-      { address, ...query }: SocialCountsDetailParams,
+      address: string,
+      query: {
+        apiKey: string;
+      },
       params: RequestParams = {},
     ) =>
       this.request<
-        SocialCountsDetailData,
+        FollowCountsSchema,
         {
           error: string;
         }
@@ -2543,9 +2476,19 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Search profiles
      * @request GET:/search/profiles
      */
-    profilesList: (query: ProfilesListParams2, params: RequestParams = {}) =>
+    profilesList: (
+      query: {
+        apiKey: string;
+        query: string;
+        /** @default "false" */
+        includeExternalProfiles?: string;
+        page?: string;
+        pageSize?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
-        ProfilesListResult,
+        SearchProfilesResponseSchema,
         {
           error: string;
         }
@@ -2567,12 +2510,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/notifications/
      */
     notificationsCreate: (
-      query: NotificationsCreateParams,
+      query: {
+        apiKey: string;
+      },
       data: WalletNotificationSchema,
       params: RequestParams = {},
     ) =>
       this.request<
-        NotificationsCreateData,
+        object,
         {
           error: string;
         }
@@ -2595,9 +2540,17 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get activity feed
      * @request GET:/activity/feed
      */
-    feedList: (query: FeedListParams, params: RequestParams = {}) =>
+    feedList: (
+      query: {
+        apiKey: string;
+        username: string;
+        page?: string;
+        pageSize?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
-        FeedListData,
+        GetActivityFeedResponseSchema,
         {
           error: string;
         }
@@ -2617,9 +2570,18 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get swap activity from followed wallets or specific token
      * @request GET:/activity/swap
      */
-    swapList: (query: SwapListParams, params: RequestParams = {}) =>
+    swapList: (
+      query: {
+        apiKey: string;
+        username?: string;
+        page?: string;
+        pageSize?: string;
+        tokenAddress?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
-        SwapListData,
+        GetSwapActivityResponseSchema,
         {
           error: string;
         }
@@ -2640,9 +2602,19 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Finds connected wallets/contacts from an id. this id should be a wallet address or a contact id. when using a contact id, specify the contactType via query params
      * @request GET:/identities/{id}
      */
-    identitiesDetail: ({ id, ...query }: IdentitiesDetailParams, params: RequestParams = {}) =>
+    identitiesDetail: (
+      id: string,
+      query: {
+        apiKey: string;
+        /** @default "PHONE" */
+        contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
+        page?: string;
+        pageSize?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
-        IdentitiesDetailData,
+        ProfileIdentityResponseSchema,
         {
           error: string;
         }
@@ -2662,9 +2634,23 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Finds associated profiles across namespaces using a wallet address or a contact id. when using a contact id, specify the contactType via query params
      * @request GET:/identities/{id}/profiles
      */
-    profilesDetail: ({ id, ...query }: ProfilesDetailParams2, params: RequestParams = {}) =>
+    profilesDetail: (
+      id: string,
+      query: {
+        apiKey: string;
+        /** @default "PHONE" */
+        contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
+        page?: string;
+        pageSize?: string;
+        /** @default "created_at" */
+        sortBy?: string;
+        /** @default "DESC" */
+        sortDirection?: 'ASC' | 'DESC';
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
-        ProfilesDetailResult,
+        GetProfilesResponseSchema,
         {
           error: string;
         }

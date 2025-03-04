@@ -1,73 +1,67 @@
-import TapestryClient from '../index';
-import { Api } from '../api';
+import { SocialFi } from '../socialfi';
 
-// Mock the API class
-jest.mock('../api');
+const BASE_URL = 'https://api.fortests.dev/api/v1';
 
 describe('TapestryClient Profiles', () => {
-  let client: TapestryClient;
-  let mockApi: jest.Mocked<Api<unknown>>;
-
   beforeEach(() => {
     // Clear all mocks before each test
     jest.clearAllMocks();
-
-    // Create a mock API instance
-    mockApi = {
-      profiles: {
-        get: jest.fn().mockResolvedValue({
-          data: [
-            { id: '1', name: 'Test Profile 1' },
-            { id: '2', name: 'Test Profile 2' },
-          ],
-          total: 2,
-          page: 1,
-          pageSize: 10,
-        }),
-      },
-      // Add other required API methods with empty mocks
-      followers: { get: jest.fn() },
-      contents: { get: jest.fn() },
-      comments: { get: jest.fn() },
-      likes: { get: jest.fn() },
-      wallets: { get: jest.fn() },
-      search: { get: jest.fn() },
-      notifications: { get: jest.fn() },
-      activity: { get: jest.fn() },
-      identities: { get: jest.fn() },
-      request: jest.fn(),
-      instance: {
-        interceptors: {
-          request: { use: jest.fn() },
-        },
-        defaults: {
-          baseURL: 'https://api.usetapestry.dev/api/v1',
-        },
-      },
-      setSecurityData: jest.fn(),
-    } as unknown as jest.Mocked<Api<unknown>>;
-
-    // Mock the Api constructor to return our mock instance
-    (Api as jest.MockedClass<typeof Api>).mockImplementation(() => mockApi);
-
-    client = new TapestryClient({
-      apiKey: 'test-api-key',
-      debug: true,
-    });
   });
 
-  describe('get profiles', () => {
-    it('should get all profiles', async () => {
-      console.log('Available profile methods:', Object.keys(client.profiles));
+  describe('findOrCreateCreate', () => {
+    it('should call the API with correct parameters and return the profile', async () => {
+      // Mock the fetch response with proper Response object
+      global.fetch = jest.fn().mockImplementation(() =>
+        Promise.resolve(
+          new Response(
+            JSON.stringify({
+              profile: {
+                id: 'test-id',
+                namespace: 'test-namespace',
+                created_at: Date.now(),
+                username: 'test-profile-a',
+              },
+            }),
+            {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            },
+          ),
+        ),
+      );
 
-      // const result = await client.profiles.get({});
-      const createdProfileA = await client.profiles.findOrCreateCreate(
-        {},
-        {
+      const client = new SocialFi({
+        baseUrl: BASE_URL,
+      });
+
+      const apiKey = 'test-api-key';
+      const profileData = {
+        username: 'test-profile-a',
+      };
+
+      const result = await client.profiles.findOrCreateCreate({ apiKey }, profileData);
+
+      // Verify the API was called with correct parameters
+      expect(global.fetch).toHaveBeenCalledWith(
+        `${BASE_URL}/profiles/findOrCreate?apiKey=test-api-key`,
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify(profileData),
+          headers: expect.objectContaining({
+            'Content-Type': 'application/json',
+          }),
+        }),
+      );
+
+      // Verify the response
+      expect(result.data).toEqual({
+        profile: {
+          id: 'test-id',
+          namespace: 'test-namespace',
+          created_at: expect.any(Number),
           username: 'test-profile-a',
         },
-      );
-      console.log('[createdProfileA]', createdProfileA);
+      });
     });
   });
 });
