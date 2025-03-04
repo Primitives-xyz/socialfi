@@ -128,10 +128,6 @@ export class TapestryClient {
     return this.createEndpointProxy(this.api.likes);
   }
 
-  get creators() {
-    return this.createEndpointProxy(this.api.creators);
-  }
-
   get wallets() {
     return this.createEndpointProxy(this.api.wallets);
   }
