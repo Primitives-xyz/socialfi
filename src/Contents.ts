@@ -10,11 +10,19 @@
  */
 
 import {
-  ContentDetailsSchema,
-  ContentSchema,
+  BatchReadCreateData,
+  BatchReadCreateParams,
+  ContentsDeleteData,
+  ContentsDeleteParams,
+  ContentsDetailData,
+  ContentsDetailParams,
+  ContentsListData,
+  ContentsListParams,
+  ContentsUpdateData,
+  ContentsUpdateParams,
   FindOrCreateContentSchema,
-  GetBatchContentsResponseSchema,
-  GetContestsResponseSchema,
+  FindOrCreateCreateParams2,
+  FindOrCreateCreateResult,
   UpdateContentSchema,
 } from './data-contracts';
 import { ContentType, HttpClient, RequestParams } from './http-client';
@@ -28,24 +36,9 @@ export class Contents<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @summary Get contents
    * @request GET:/contents/
    */
-  contentsList = (
-    query: {
-      apiKey: string;
-      orderByField?: string;
-      orderByDirection?: 'ASC' | 'DESC';
-      requireFields?: string;
-      filterField?: string;
-      filterValue?: string;
-      page?: string;
-      pageSize?: string;
-      profileId?: string;
-      requestingProfileId?: string;
-      namespace?: 'primitives';
-    },
-    params: RequestParams = {},
-  ) =>
+  contentsList = (query: ContentsListParams, params: RequestParams = {}) =>
     this.request<
-      GetContestsResponseSchema,
+      ContentsListData,
       {
         error: string;
       }
@@ -64,16 +57,9 @@ export class Contents<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @summary Get content by id
    * @request GET:/contents/{id}
    */
-  contentsDetail = (
-    id: string,
-    query: {
-      apiKey: string;
-      requestingProfileId?: string;
-    },
-    params: RequestParams = {},
-  ) =>
+  contentsDetail = ({ id, ...query }: ContentsDetailParams, params: RequestParams = {}) =>
     this.request<
-      ContentDetailsSchema,
+      ContentsDetailData,
       {
         error: string;
       }
@@ -93,15 +79,12 @@ export class Contents<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @request PUT:/contents/{id}
    */
   contentsUpdate = (
-    id: string,
-    query: {
-      apiKey: string;
-    },
+    { id, ...query }: ContentsUpdateParams,
     data: UpdateContentSchema,
     params: RequestParams = {},
   ) =>
     this.request<
-      ContentSchema,
+      ContentsUpdateData,
       {
         error: string;
       }
@@ -122,15 +105,9 @@ export class Contents<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @summary Delete content
    * @request DELETE:/contents/{id}
    */
-  contentsDelete = (
-    id: string,
-    query: {
-      apiKey: string;
-    },
-    params: RequestParams = {},
-  ) =>
+  contentsDelete = ({ id, ...query }: ContentsDeleteParams, params: RequestParams = {}) =>
     this.request<
-      object,
+      ContentsDeleteData,
       {
         error: string;
       }
@@ -150,14 +127,12 @@ export class Contents<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @request POST:/contents/findOrCreate
    */
   findOrCreateCreate = (
-    query: {
-      apiKey: string;
-    },
+    query: FindOrCreateCreateParams2,
     data: FindOrCreateContentSchema,
     params: RequestParams = {},
   ) =>
     this.request<
-      ContentSchema,
+      FindOrCreateCreateResult,
       {
         error: string;
       }
@@ -178,15 +153,9 @@ export class Contents<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @summary Get multiple contents
    * @request POST:/contents/batch/read
    */
-  batchReadCreate = (
-    query: {
-      apiKey: string;
-    },
-    data: string[],
-    params: RequestParams = {},
-  ) =>
+  batchReadCreate = (query: BatchReadCreateParams, data: string[], params: RequestParams = {}) =>
     this.request<
-      GetBatchContentsResponseSchema,
+      BatchReadCreateData,
       {
         error: string;
       }

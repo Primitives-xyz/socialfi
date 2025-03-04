@@ -1285,3 +1285,347 @@ export interface ProfileIdentityResponseSchema {
   page: number;
   pageSize: number;
 }
+
+export interface FindOrCreateCreateParams {
+  apiKey: string;
+}
+
+export type FindOrCreateCreateData = FindOrCreateResponseSchema;
+
+export interface ProfilesListParams {
+  apiKey: string;
+  /** @minLength 32 */
+  walletAddress?: string;
+  phoneNumber?: string;
+  page?: string;
+  pageSize?: string;
+  /** @default "created_at" */
+  sortBy?: string;
+  /** @default "DESC" */
+  sortDirection?: 'ASC' | 'DESC';
+}
+
+export type ProfilesListData = GetProfilesResponseSchema;
+
+export interface ProfilesDetailParams {
+  apiKey: string;
+  /** The id of the start profile. */
+  id: string;
+}
+
+export type ProfilesDetailData = GetProfileDetailsSchema;
+
+export interface ProfilesUpdateParams {
+  apiKey: string;
+  id: string;
+}
+
+export type ProfilesUpdateData = ProfileSchema;
+
+export interface FollowersDetailParams {
+  apiKey: string;
+  page?: string;
+  pageSize?: string;
+  id: string;
+}
+
+export type FollowersDetailData = GetProfileFollowersResponseSchema;
+
+export interface FollowingDetailParams {
+  apiKey: string;
+  page?: string;
+  pageSize?: string;
+  id: string;
+}
+
+export type FollowingDetailData = GetProfileFollowingResponseSchema;
+
+export interface FollowingWhoFollowDetailParams {
+  apiKey: string;
+  requestorId: string;
+  page?: string;
+  pageSize?: string;
+  id: string;
+}
+
+export type FollowingWhoFollowDetailData = GetProfileFollowingWhoFollowResponseSchema;
+
+export interface SuggestedDetailParams {
+  apiKey: string;
+  /** @default "PHONE" */
+  contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
+  /** should either be a wallet address (default) or a contact id. when using contact ids, specify the contactType via query params */
+  identifier: string;
+}
+
+export type SuggestedDetailData = Record<
+  string,
+  {
+    namespaces: {
+      name: string | null;
+      readableName: string | null;
+      faviconURL: string | null;
+      userProfileURL: string | null;
+    }[];
+    profile: {
+      id: string;
+      namespace: string;
+      created_at: number;
+      username: string;
+      bio?: string | null;
+      image?: string | null;
+    };
+    wallet?: {
+      address: string;
+    };
+    contact?: {
+      /** @minLength 1 */
+      id: string;
+      type: 'EMAIL' | 'PHONE' | 'TWITTER';
+      /** only available for x contact types */
+      bio?: string;
+      /** only available for x contact types */
+      image?: string;
+    };
+  }
+>;
+
+export interface SuggestedGlobalDetailParams {
+  apiKey: string;
+  /** @default "PHONE" */
+  contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
+  /** should either be a wallet address (default) or a contact id. when using contact ids, specify the contactType via query params */
+  identifier: string;
+}
+
+export type SuggestedGlobalDetailData = SuggestedProfilesToInvite[];
+
+export interface ReferralsDetailParams {
+  apiKey: string;
+  /** Optional filter to specify the depth of upstream referral connections (profiles that referred this user). Defaults to 2 if no value is specified. */
+  upstream?: string;
+  /** Optional filter to specify the depth of downstream referral connections (profiles referred by this user). Defaults to 2 if no value is specified. */
+  downstream?: string;
+  id: string;
+}
+
+export type ReferralsDetailData = ReferralProfilesSchema;
+
+export interface TokenOwnersDetailParams {
+  apiKey: string;
+  requestorId?: string;
+  page?: string;
+  pageSize?: string;
+  tokenAddress: string;
+}
+
+export type TokenOwnersDetailData = ITokenHoldersResponseSchema;
+
+export interface PostFollowersParams {
+  apiKey: string;
+}
+
+export type PostFollowersData = object;
+
+export interface RemoveCreateParams {
+  apiKey: string;
+}
+
+export type RemoveCreateData = object;
+
+export interface StateListParams {
+  apiKey: string;
+  startId: string;
+  endId: string;
+}
+
+export type StateListData = IsFollowingSchema;
+
+export interface ContentsListParams {
+  apiKey: string;
+  orderByField?: string;
+  orderByDirection?: 'ASC' | 'DESC';
+  requireFields?: string;
+  filterField?: string;
+  filterValue?: string;
+  page?: string;
+  pageSize?: string;
+  profileId?: string;
+  requestingProfileId?: string;
+  namespace?: 'primitives';
+}
+
+export type ContentsListData = GetContestsResponseSchema;
+
+export interface ContentsDetailParams {
+  apiKey: string;
+  requestingProfileId?: string;
+  id: string;
+}
+
+export type ContentsDetailData = ContentDetailsSchema;
+
+export interface ContentsUpdateParams {
+  apiKey: string;
+  id: string;
+}
+
+export type ContentsUpdateData = ContentSchema;
+
+export interface ContentsDeleteParams {
+  apiKey: string;
+  id: string;
+}
+
+export type ContentsDeleteData = object;
+
+export interface FindOrCreateCreateParams2 {
+  apiKey: string;
+}
+
+export type FindOrCreateCreateResult = ContentSchema;
+
+export interface BatchReadCreateParams {
+  apiKey: string;
+}
+
+export type BatchReadCreateData = GetBatchContentsResponseSchema;
+
+export interface CommentsListParams {
+  apiKey: string;
+  contentId?: string;
+  profileId?: string;
+  targetProfileId?: string;
+  page?: string;
+  pageSize?: string;
+  requestingProfileId?: string;
+}
+
+export type CommentsListData = GetCommentsResponseSchema;
+
+export interface CommentsCreateParams {
+  apiKey: string;
+}
+
+export type CommentsCreateData = CommentSchema;
+
+export interface CommentsDetailParams {
+  apiKey: string;
+  requestingProfileId?: string;
+  id: string;
+}
+
+export type CommentsDetailData = CommentDetailsWithRepliesSchema;
+
+export interface CommentsUpdateParams {
+  apiKey: string;
+  id: string;
+}
+
+export type CommentsUpdateData = CommentSchema;
+
+export interface CommentsDeleteParams {
+  apiKey: string;
+  id: string;
+}
+
+export type CommentsDeleteData = object;
+
+export interface RepliesDetailParams {
+  apiKey: string;
+  page?: string;
+  pageSize?: string;
+  requestingProfileId?: string;
+  id: string;
+}
+
+export type RepliesDetailData = GetCommentsResponseSchema;
+
+export interface BatchReadCreateParams2 {
+  apiKey: string;
+}
+
+export type BatchReadCreateResult = GetBatchCommentsResponseSchema;
+
+export interface LikesCreateParams {
+  apiKey: string;
+  nodeId: string;
+}
+
+export type LikesCreateData = object;
+
+export interface LikesDeleteParams {
+  apiKey: string;
+  nodeId: string;
+}
+
+export type LikesDeleteData = object;
+
+export interface SocialCountsDetailParams {
+  apiKey: string;
+  address: string;
+}
+
+export type SocialCountsDetailData = FollowCountsSchema;
+
+export interface ProfilesListParams2 {
+  apiKey: string;
+  query: string;
+  /** @default "false" */
+  includeExternalProfiles?: string;
+  page?: string;
+  pageSize?: string;
+}
+
+export type ProfilesListResult = SearchProfilesResponseSchema;
+
+export interface NotificationsCreateParams {
+  apiKey: string;
+}
+
+export type NotificationsCreateData = object;
+
+export interface FeedListParams {
+  apiKey: string;
+  username: string;
+  page?: string;
+  pageSize?: string;
+}
+
+export type FeedListData = GetActivityFeedResponseSchema;
+
+export interface SwapListParams {
+  apiKey: string;
+  username?: string;
+  page?: string;
+  pageSize?: string;
+  tokenAddress?: string;
+}
+
+export type SwapListData = GetSwapActivityResponseSchema;
+
+export interface IdentitiesDetailParams {
+  apiKey: string;
+  /** @default "PHONE" */
+  contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
+  page?: string;
+  pageSize?: string;
+  id: string;
+}
+
+export type IdentitiesDetailData = ProfileIdentityResponseSchema;
+
+export interface ProfilesDetailParams2 {
+  apiKey: string;
+  /** @default "PHONE" */
+  contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
+  page?: string;
+  pageSize?: string;
+  /** @default "created_at" */
+  sortBy?: string;
+  /** @default "DESC" */
+  sortDirection?: 'ASC' | 'DESC';
+  id: string;
+}
+
+export type ProfilesDetailResult = GetProfilesResponseSchema;

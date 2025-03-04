@@ -10,11 +10,21 @@
  */
 
 import {
-  CommentDetailsWithRepliesSchema,
-  CommentSchema,
+  BatchReadCreateParams2,
+  BatchReadCreateResult,
+  CommentsCreateData,
+  CommentsCreateParams,
+  CommentsDeleteData,
+  CommentsDeleteParams,
+  CommentsDetailData,
+  CommentsDetailParams,
+  CommentsListData,
+  CommentsListParams,
+  CommentsUpdateData,
+  CommentsUpdateParams,
   CreateCommentSchema,
-  GetBatchCommentsResponseSchema,
-  GetCommentsResponseSchema,
+  RepliesDetailData,
+  RepliesDetailParams,
   UpdateCommentSchema,
 } from './data-contracts';
 import { ContentType, HttpClient, RequestParams } from './http-client';
@@ -28,20 +38,9 @@ export class Comments<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @summary Get comments
    * @request GET:/comments/
    */
-  commentsList = (
-    query: {
-      apiKey: string;
-      contentId?: string;
-      profileId?: string;
-      targetProfileId?: string;
-      page?: string;
-      pageSize?: string;
-      requestingProfileId?: string;
-    },
-    params: RequestParams = {},
-  ) =>
+  commentsList = (query: CommentsListParams, params: RequestParams = {}) =>
     this.request<
-      GetCommentsResponseSchema,
+      CommentsListData,
       {
         error: string;
       }
@@ -61,14 +60,12 @@ export class Comments<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @request POST:/comments/
    */
   commentsCreate = (
-    query: {
-      apiKey: string;
-    },
+    query: CommentsCreateParams,
     data: CreateCommentSchema,
     params: RequestParams = {},
   ) =>
     this.request<
-      CommentSchema,
+      CommentsCreateData,
       {
         error: string;
       }
@@ -89,16 +86,9 @@ export class Comments<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @summary Get comment details
    * @request GET:/comments/{id}
    */
-  commentsDetail = (
-    id: string,
-    query: {
-      apiKey: string;
-      requestingProfileId?: string;
-    },
-    params: RequestParams = {},
-  ) =>
+  commentsDetail = ({ id, ...query }: CommentsDetailParams, params: RequestParams = {}) =>
     this.request<
-      CommentDetailsWithRepliesSchema,
+      CommentsDetailData,
       {
         error: string;
       }
@@ -118,15 +108,12 @@ export class Comments<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @request PUT:/comments/{id}
    */
   commentsUpdate = (
-    id: string,
-    query: {
-      apiKey: string;
-    },
+    { id, ...query }: CommentsUpdateParams,
     data: UpdateCommentSchema,
     params: RequestParams = {},
   ) =>
     this.request<
-      CommentSchema,
+      CommentsUpdateData,
       {
         error: string;
       }
@@ -147,15 +134,9 @@ export class Comments<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @summary Delete comment
    * @request DELETE:/comments/{id}
    */
-  commentsDelete = (
-    id: string,
-    query: {
-      apiKey: string;
-    },
-    params: RequestParams = {},
-  ) =>
+  commentsDelete = ({ id, ...query }: CommentsDeleteParams, params: RequestParams = {}) =>
     this.request<
-      object,
+      CommentsDeleteData,
       {
         error: string;
       }
@@ -174,18 +155,9 @@ export class Comments<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @summary Get comment replies
    * @request GET:/comments/{id}/replies
    */
-  repliesDetail = (
-    id: string,
-    query: {
-      apiKey: string;
-      page?: string;
-      pageSize?: string;
-      requestingProfileId?: string;
-    },
-    params: RequestParams = {},
-  ) =>
+  repliesDetail = ({ id, ...query }: RepliesDetailParams, params: RequestParams = {}) =>
     this.request<
-      GetCommentsResponseSchema,
+      RepliesDetailData,
       {
         error: string;
       }
@@ -204,15 +176,9 @@ export class Comments<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @summary Get multiple comment details
    * @request POST:/comments/batch/read
    */
-  batchReadCreate = (
-    query: {
-      apiKey: string;
-    },
-    data: string[],
-    params: RequestParams = {},
-  ) =>
+  batchReadCreate = (query: BatchReadCreateParams2, data: string[], params: RequestParams = {}) =>
     this.request<
-      GetBatchCommentsResponseSchema,
+      BatchReadCreateResult,
       {
         error: string;
       }

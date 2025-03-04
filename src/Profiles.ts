@@ -10,17 +10,29 @@
  */
 
 import {
+  FindOrCreateCreateData,
+  FindOrCreateCreateParams,
   FindOrCreateProfileSchema,
-  FindOrCreateResponseSchema,
-  GetProfileDetailsSchema,
-  GetProfileFollowersResponseSchema,
-  GetProfileFollowingResponseSchema,
-  GetProfileFollowingWhoFollowResponseSchema,
-  GetProfilesResponseSchema,
-  ITokenHoldersResponseSchema,
-  ProfileSchema,
-  ReferralProfilesSchema,
-  SuggestedProfilesToInvite,
+  FollowersDetailData,
+  FollowersDetailParams,
+  FollowingDetailData,
+  FollowingDetailParams,
+  FollowingWhoFollowDetailData,
+  FollowingWhoFollowDetailParams,
+  ProfilesDetailData,
+  ProfilesDetailParams,
+  ProfilesListData,
+  ProfilesListParams,
+  ProfilesUpdateData,
+  ProfilesUpdateParams,
+  ReferralsDetailData,
+  ReferralsDetailParams,
+  SuggestedDetailData,
+  SuggestedDetailParams,
+  SuggestedGlobalDetailData,
+  SuggestedGlobalDetailParams,
+  TokenOwnersDetailData,
+  TokenOwnersDetailParams,
   UpdateProfileSchema,
 } from './data-contracts';
 import { ContentType, HttpClient, RequestParams } from './http-client';
@@ -35,14 +47,12 @@ export class Profiles<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @request POST:/profiles/findOrCreate
    */
   findOrCreateCreate = (
-    query: {
-      apiKey: string;
-    },
+    query: FindOrCreateCreateParams,
     data: FindOrCreateProfileSchema,
     params: RequestParams = {},
   ) =>
     this.request<
-      FindOrCreateResponseSchema,
+      FindOrCreateCreateData,
       {
         error: string;
       }
@@ -63,23 +73,9 @@ export class Profiles<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @summary Get profiles
    * @request GET:/profiles/
    */
-  profilesList = (
-    query: {
-      apiKey: string;
-      /** @minLength 32 */
-      walletAddress?: string;
-      phoneNumber?: string;
-      page?: string;
-      pageSize?: string;
-      /** @default "created_at" */
-      sortBy?: string;
-      /** @default "DESC" */
-      sortDirection?: 'ASC' | 'DESC';
-    },
-    params: RequestParams = {},
-  ) =>
+  profilesList = (query: ProfilesListParams, params: RequestParams = {}) =>
     this.request<
-      GetProfilesResponseSchema,
+      ProfilesListData,
       {
         error: string;
       }
@@ -98,15 +94,9 @@ export class Profiles<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @summary Find a profile
    * @request GET:/profiles/{id}
    */
-  profilesDetail = (
-    id: string,
-    query: {
-      apiKey: string;
-    },
-    params: RequestParams = {},
-  ) =>
+  profilesDetail = ({ id, ...query }: ProfilesDetailParams, params: RequestParams = {}) =>
     this.request<
-      GetProfileDetailsSchema,
+      ProfilesDetailData,
       {
         error: string;
       }
@@ -126,15 +116,12 @@ export class Profiles<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @request PUT:/profiles/{id}
    */
   profilesUpdate = (
-    id: string,
-    query: {
-      apiKey: string;
-    },
+    { id, ...query }: ProfilesUpdateParams,
     data: UpdateProfileSchema,
     params: RequestParams = {},
   ) =>
     this.request<
-      ProfileSchema,
+      ProfilesUpdateData,
       {
         error: string;
       }
@@ -155,17 +142,9 @@ export class Profiles<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @summary Get followers
    * @request GET:/profiles/{id}/followers
    */
-  followersDetail = (
-    id: string,
-    query: {
-      apiKey: string;
-      page?: string;
-      pageSize?: string;
-    },
-    params: RequestParams = {},
-  ) =>
+  followersDetail = ({ id, ...query }: FollowersDetailParams, params: RequestParams = {}) =>
     this.request<
-      GetProfileFollowersResponseSchema,
+      FollowersDetailData,
       {
         error: string;
       }
@@ -184,17 +163,9 @@ export class Profiles<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @summary Get following
    * @request GET:/profiles/{id}/following
    */
-  followingDetail = (
-    id: string,
-    query: {
-      apiKey: string;
-      page?: string;
-      pageSize?: string;
-    },
-    params: RequestParams = {},
-  ) =>
+  followingDetail = ({ id, ...query }: FollowingDetailParams, params: RequestParams = {}) =>
     this.request<
-      GetProfileFollowingResponseSchema,
+      FollowingDetailData,
       {
         error: string;
       }
@@ -214,17 +185,11 @@ export class Profiles<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @request GET:/profiles/{id}/following-who-follow
    */
   followingWhoFollowDetail = (
-    id: string,
-    query: {
-      apiKey: string;
-      requestorId: string;
-      page?: string;
-      pageSize?: string;
-    },
+    { id, ...query }: FollowingWhoFollowDetailParams,
     params: RequestParams = {},
   ) =>
     this.request<
-      GetProfileFollowingWhoFollowResponseSchema,
+      FollowingWhoFollowDetailData,
       {
         error: string;
       }
@@ -243,47 +208,9 @@ export class Profiles<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @summary Get suggested profiles to follow
    * @request GET:/profiles/suggested/{identifier}
    */
-  suggestedDetail = (
-    identifier: string,
-    query: {
-      apiKey: string;
-      /** @default "PHONE" */
-      contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
-    },
-    params: RequestParams = {},
-  ) =>
+  suggestedDetail = ({ identifier, ...query }: SuggestedDetailParams, params: RequestParams = {}) =>
     this.request<
-      Record<
-        string,
-        {
-          namespaces: {
-            name: string | null;
-            readableName: string | null;
-            faviconURL: string | null;
-            userProfileURL: string | null;
-          }[];
-          profile: {
-            id: string;
-            namespace: string;
-            created_at: number;
-            username: string;
-            bio?: string | null;
-            image?: string | null;
-          };
-          wallet?: {
-            address: string;
-          };
-          contact?: {
-            /** @minLength 1 */
-            id: string;
-            type: 'EMAIL' | 'PHONE' | 'TWITTER';
-            /** only available for x contact types */
-            bio?: string;
-            /** only available for x contact types */
-            image?: string;
-          };
-        }
-      >,
+      SuggestedDetailData,
       {
         error: string;
       }
@@ -303,16 +230,11 @@ export class Profiles<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @request GET:/profiles/suggested/{identifier}/global
    */
   suggestedGlobalDetail = (
-    identifier: string,
-    query: {
-      apiKey: string;
-      /** @default "PHONE" */
-      contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
-    },
+    { identifier, ...query }: SuggestedGlobalDetailParams,
     params: RequestParams = {},
   ) =>
     this.request<
-      SuggestedProfilesToInvite[],
+      SuggestedGlobalDetailData,
       {
         error: string;
       }
@@ -331,19 +253,9 @@ export class Profiles<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @summary Retrieve referrals
    * @request GET:/profiles/{id}/referrals
    */
-  referralsDetail = (
-    id: string,
-    query: {
-      apiKey: string;
-      /** Optional filter to specify the depth of upstream referral connections (profiles that referred this user). Defaults to 2 if no value is specified. */
-      upstream?: string;
-      /** Optional filter to specify the depth of downstream referral connections (profiles referred by this user). Defaults to 2 if no value is specified. */
-      downstream?: string;
-    },
-    params: RequestParams = {},
-  ) =>
+  referralsDetail = ({ id, ...query }: ReferralsDetailParams, params: RequestParams = {}) =>
     this.request<
-      ReferralProfilesSchema,
+      ReferralsDetailData,
       {
         error: string;
       }
@@ -363,17 +275,11 @@ export class Profiles<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @request GET:/profiles/token-owners/{tokenAddress}
    */
   tokenOwnersDetail = (
-    tokenAddress: string,
-    query: {
-      apiKey: string;
-      requestorId?: string;
-      page?: string;
-      pageSize?: string;
-    },
+    { tokenAddress, ...query }: TokenOwnersDetailParams,
     params: RequestParams = {},
   ) =>
     this.request<
-      ITokenHoldersResponseSchema,
+      TokenOwnersDetailData,
       {
         error: string;
       }

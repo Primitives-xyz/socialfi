@@ -9,7 +9,14 @@
  * ---------------------------------------------------------------
  */
 
-import { CreateLikeSchema, DeleteLikeSchema } from './data-contracts';
+import {
+  CreateLikeSchema,
+  DeleteLikeSchema,
+  LikesCreateData,
+  LikesCreateParams,
+  LikesDeleteData,
+  LikesDeleteParams,
+} from './data-contracts';
 import { ContentType, HttpClient, RequestParams } from './http-client';
 
 export class Likes<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
@@ -22,15 +29,12 @@ export class Likes<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
    * @request POST:/likes/{nodeId}
    */
   likesCreate = (
-    nodeId: string,
-    query: {
-      apiKey: string;
-    },
+    { nodeId, ...query }: LikesCreateParams,
     data: CreateLikeSchema,
     params: RequestParams = {},
   ) =>
     this.request<
-      object,
+      LikesCreateData,
       {
         error: string;
       }
@@ -52,15 +56,12 @@ export class Likes<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
    * @request DELETE:/likes/{nodeId}
    */
   likesDelete = (
-    nodeId: string,
-    query: {
-      apiKey: string;
-    },
+    { nodeId, ...query }: LikesDeleteParams,
     data: DeleteLikeSchema,
     params: RequestParams = {},
   ) =>
     this.request<
-      object,
+      LikesDeleteData,
       {
         error: string;
       }

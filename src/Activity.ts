@@ -9,7 +9,7 @@
  * ---------------------------------------------------------------
  */
 
-import { GetActivityFeedResponseSchema, GetSwapActivityResponseSchema } from './data-contracts';
+import { FeedListData, FeedListParams, SwapListData, SwapListParams } from './data-contracts';
 import { HttpClient, RequestParams } from './http-client';
 
 export class Activity<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
@@ -21,17 +21,9 @@ export class Activity<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @summary Get activity feed
    * @request GET:/activity/feed
    */
-  feedList = (
-    query: {
-      apiKey: string;
-      username: string;
-      page?: string;
-      pageSize?: string;
-    },
-    params: RequestParams = {},
-  ) =>
+  feedList = (query: FeedListParams, params: RequestParams = {}) =>
     this.request<
-      GetActivityFeedResponseSchema,
+      FeedListData,
       {
         error: string;
       }
@@ -50,18 +42,9 @@ export class Activity<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @summary Get swap activity from followed wallets or specific token
    * @request GET:/activity/swap
    */
-  swapList = (
-    query: {
-      apiKey: string;
-      username?: string;
-      page?: string;
-      pageSize?: string;
-      tokenAddress?: string;
-    },
-    params: RequestParams = {},
-  ) =>
+  swapList = (query: SwapListParams, params: RequestParams = {}) =>
     this.request<
-      GetSwapActivityResponseSchema,
+      SwapListData,
       {
         error: string;
       }

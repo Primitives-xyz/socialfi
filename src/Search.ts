@@ -9,7 +9,7 @@
  * ---------------------------------------------------------------
  */
 
-import { SearchProfilesResponseSchema } from './data-contracts';
+import { ProfilesListParams2, ProfilesListResult } from './data-contracts';
 import { HttpClient, RequestParams } from './http-client';
 
 export class Search<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
@@ -21,19 +21,9 @@ export class Search<SecurityDataType = unknown> extends HttpClient<SecurityDataT
    * @summary Search profiles
    * @request GET:/search/profiles
    */
-  profilesList = (
-    query: {
-      apiKey: string;
-      query: string;
-      /** @default "false" */
-      includeExternalProfiles?: string;
-      page?: string;
-      pageSize?: string;
-    },
-    params: RequestParams = {},
-  ) =>
+  profilesList = (query: ProfilesListParams2, params: RequestParams = {}) =>
     this.request<
-      SearchProfilesResponseSchema,
+      ProfilesListResult,
       {
         error: string;
       }

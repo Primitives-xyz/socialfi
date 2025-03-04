@@ -9,7 +9,11 @@
  * ---------------------------------------------------------------
  */
 
-import { WalletNotificationSchema } from './data-contracts';
+import {
+  NotificationsCreateData,
+  NotificationsCreateParams,
+  WalletNotificationSchema,
+} from './data-contracts';
 import { ContentType, HttpClient, RequestParams } from './http-client';
 
 export class Notifications<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
@@ -22,14 +26,12 @@ export class Notifications<SecurityDataType = unknown> extends HttpClient<Securi
    * @request POST:/notifications/
    */
   notificationsCreate = (
-    query: {
-      apiKey: string;
-    },
+    query: NotificationsCreateParams,
     data: WalletNotificationSchema,
     params: RequestParams = {},
   ) =>
     this.request<
-      object,
+      NotificationsCreateData,
       {
         error: string;
       }

@@ -9,7 +9,16 @@
  * ---------------------------------------------------------------
  */
 
-import { CreateFollowSchema, DeleteFollowSchema, IsFollowingSchema } from './data-contracts';
+import {
+  CreateFollowSchema,
+  DeleteFollowSchema,
+  PostFollowersData,
+  PostFollowersParams,
+  RemoveCreateData,
+  RemoveCreateParams,
+  StateListData,
+  StateListParams,
+} from './data-contracts';
 import { ContentType, HttpClient, RequestParams } from './http-client';
 
 export class Followers<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
@@ -22,14 +31,12 @@ export class Followers<SecurityDataType = unknown> extends HttpClient<SecurityDa
    * @request POST:/followers/add
    */
   postFollowers = (
-    query: {
-      apiKey: string;
-    },
+    query: PostFollowersParams,
     data: CreateFollowSchema,
     params: RequestParams = {},
   ) =>
     this.request<
-      object,
+      PostFollowersData,
       {
         error: string;
       }
@@ -51,14 +58,12 @@ export class Followers<SecurityDataType = unknown> extends HttpClient<SecurityDa
    * @request POST:/followers/remove
    */
   removeCreate = (
-    query: {
-      apiKey: string;
-    },
+    query: RemoveCreateParams,
     data: DeleteFollowSchema,
     params: RequestParams = {},
   ) =>
     this.request<
-      object,
+      RemoveCreateData,
       {
         error: string;
       }
@@ -79,16 +84,9 @@ export class Followers<SecurityDataType = unknown> extends HttpClient<SecurityDa
    * @summary Is following a profile.
    * @request GET:/followers/state
    */
-  stateList = (
-    query: {
-      apiKey: string;
-      startId: string;
-      endId: string;
-    },
-    params: RequestParams = {},
-  ) =>
+  stateList = (query: StateListParams, params: RequestParams = {}) =>
     this.request<
-      IsFollowingSchema,
+      StateListData,
       {
         error: string;
       }

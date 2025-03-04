@@ -9,7 +9,7 @@
  * ---------------------------------------------------------------
  */
 
-import { FollowCountsSchema } from './data-contracts';
+import { SocialCountsDetailData, SocialCountsDetailParams } from './data-contracts';
 import { HttpClient, RequestParams } from './http-client';
 
 export class Wallets<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
@@ -22,14 +22,11 @@ export class Wallets<SecurityDataType = unknown> extends HttpClient<SecurityData
    * @request GET:/wallets/{address}/socialCounts
    */
   socialCountsDetail = (
-    address: string,
-    query: {
-      apiKey: string;
-    },
+    { address, ...query }: SocialCountsDetailParams,
     params: RequestParams = {},
   ) =>
     this.request<
-      FollowCountsSchema,
+      SocialCountsDetailData,
       {
         error: string;
       }
