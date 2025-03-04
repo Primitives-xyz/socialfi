@@ -276,6 +276,10 @@ export interface ContactSchema {
   /** @minLength 1 */
   id: string;
   type: 'EMAIL' | 'PHONE' | 'TWITTER';
+  /** only available for x contact types */
+  bio?: string;
+  /** only available for x contact types */
+  image?: string;
 }
 
 export interface ContentSchema {
@@ -347,6 +351,7 @@ export interface GetContestsResponseSchema {
   }[];
   page: number;
   pageSize: number;
+  totalCount: number;
 }
 
 export interface GetBatchContentsResponseSchema {
@@ -375,23 +380,6 @@ export interface GetBatchContentsResponseSchema {
     id: string;
     error: string;
   }[];
-}
-
-export interface SuggestedInviteSchema {
-  namespaces: {
-    name: string;
-    readableName: string | null;
-    faviconURL: string | null;
-    userProfileURL: string | null;
-  }[];
-  wallet?: {
-    address: string;
-  };
-  contact?: {
-    /** @minLength 1 */
-    id: string;
-    type: 'EMAIL' | 'PHONE' | 'TWITTER';
-  };
 }
 
 export interface BeforeLLMUsageSchema {
@@ -509,6 +497,15 @@ export interface ClaimChestResponseSchema {
 export interface PlayGameResponseSchema {
   userBalance?: string;
   gameCreditsFee: number;
+}
+
+export interface GameEndInputSchema {
+  /**
+   * @min 0
+   * @exclusiveMin true
+   */
+  score: number;
+  profileId: string;
 }
 
 export interface CustomPropertySchema {
@@ -640,7 +637,7 @@ export interface DeleteLikeSchema {
 }
 
 export interface NamespacePropertiesSchema {
-  name: string;
+  name: string | null;
   readableName: string | null;
   faviconURL: string | null;
   userProfileURL: string | null;
@@ -655,6 +652,8 @@ export interface CreateNimbusAppSchema {
 export interface NimbusCheckoutInputSchema {
   bundleId: string;
   idempotencyKey: string;
+  successUrl?: string;
+  cancelUrl?: string;
 }
 
 export interface NimbusCheckoutResponseSchema {
@@ -667,7 +666,6 @@ export interface NimbusCheckoutResponseSchema {
 export interface NimbusDeployInputSchema {
   contentId: string;
   idempotencyKey: string;
-  paid?: boolean;
 }
 
 export interface GameDetailsSchema {
@@ -676,6 +674,7 @@ export interface GameDetailsSchema {
   appNamespace: string;
   title: string;
   deployUrl: string;
+  coverImageUrl: string | null;
 }
 
 export interface GamesAndScoresSchema {
@@ -686,6 +685,7 @@ export interface GamesAndScoresSchema {
       appNamespace: string;
       title: string;
       deployUrl: string;
+      coverImageUrl: string | null;
     };
     score: {
       /**
@@ -713,6 +713,7 @@ export interface GetGamesResponseSchema {
     appNamespace: string;
     title: string;
     deployUrl: string;
+    coverImageUrl: string | null;
   }[];
   page: number;
   pageSize: number;
@@ -755,40 +756,71 @@ export interface ProfileSchema {
 }
 
 export interface FindOrCreateProfileSchema {
+  /** Username for the profile */
   username: string;
+  /** Optional unique identifier for the profile */
   id?: string;
+  /** Optional biography or description */
   bio?: string;
+  /** Optional URL to profile image */
   image?: string;
+  /** Optional ID of the referring profile */
   referredById?: string;
+  /** Optional phone number for contact */
   phoneNumber?: string;
-  /** @minLength 32 */
+  /**
+   * Optional blockchain wallet address
+   * @minLength 32
+   */
   walletAddress?: string;
+  /** Optional blockchain network identifier */
   blockchain?: 'SOLANA' | 'ETHEREUM';
+  /** Optional contact information */
   contact?: {
     /** @minLength 1 */
     id: string;
     type: 'EMAIL' | 'PHONE' | 'TWITTER';
+    /** only available for x contact types */
+    bio?: string;
+    /** only available for x contact types */
+    image?: string;
   };
+  /** Optional array of custom properties */
   properties?: {
     key: string;
     value: string | number | boolean;
   }[];
-  /** @default "FAST_UNCONFIRMED" */
+  /**
+   * Optional execution method, defaults to FAST_UNCONFIRMED
+   * @default "FAST_UNCONFIRMED"
+   */
   execution?: 'FAST_UNCONFIRMED' | 'QUICK_SIGNATURE' | 'CONFIRMED_AND_PARSED';
 }
 
 export interface X {
+  /** Username for the profile */
   username: string;
+  /** Optional unique identifier for the profile */
   id?: string;
+  /** Optional biography or description */
   bio?: string;
+  /** Optional URL to profile image */
   image?: string;
+  /** Optional ID of the referring profile */
   referredById?: string;
+  /** Optional phone number for contact */
   phoneNumber?: string;
+  /** Optional contact information */
   contact?: {
     /** @minLength 1 */
     id: string;
     type: 'EMAIL' | 'PHONE' | 'TWITTER';
+    /** only available for x contact types */
+    bio?: string;
+    /** only available for x contact types */
+    image?: string;
   };
+  /** Optional array of custom properties */
   properties?: {
     key: string;
     value: string | number | boolean;
@@ -814,7 +846,7 @@ export interface UpdateProfileSchema {
 
 export interface SuggestedProfileFollowSchema {
   namespaces: {
-    name: string;
+    name: string | null;
     readableName: string | null;
     faviconURL: string | null;
     userProfileURL: string | null;
@@ -834,6 +866,48 @@ export interface SuggestedProfileFollowSchema {
     /** @minLength 1 */
     id: string;
     type: 'EMAIL' | 'PHONE' | 'TWITTER';
+    /** only available for x contact types */
+    bio?: string;
+    /** only available for x contact types */
+    image?: string;
+  };
+}
+
+export interface SuggestedProfilesToInvite {
+  namespaces: {
+    name: string | null;
+    readableName: string | null;
+    faviconURL: string | null;
+    userProfileURL: string | null;
+  }[];
+  namespaceCount: number;
+  profiles: {
+    namespace: {
+      name: string | null;
+      readableName: string | null;
+      faviconURL: string | null;
+      userProfileURL: string | null;
+    };
+    profiles: {
+      id: string;
+      namespace: string;
+      created_at: number;
+      username: string;
+      bio?: string | null;
+      image?: string | null;
+    }[];
+  }[];
+  wallet?: {
+    address: string;
+  };
+  contact?: {
+    /** @minLength 1 */
+    id: string;
+    type: 'EMAIL' | 'PHONE' | 'TWITTER';
+    /** only available for x contact types */
+    bio?: string;
+    /** only available for x contact types */
+    image?: string;
   };
 }
 
@@ -874,6 +948,38 @@ export interface ReferralProfilesSchema {
   }[];
 }
 
+export interface IProfileWithWalletsSchema {
+  id: string;
+  namespace: string;
+  created_at: number;
+  username: string;
+  bio?: string | null;
+  image?: string | null;
+  wallets: {
+    id: string;
+    created_at: number;
+    blockchain: 'SOLANA' | 'ETHEREUM';
+    wallet_type?: 'PHANTOM' | 'WEB3AUTH';
+  }[];
+}
+
+export interface ITokenHoldersResponseSchema {
+  profiles: {
+    id: string;
+    namespace: string;
+    created_at: number;
+    username: string;
+    bio?: string | null;
+    image?: string | null;
+    wallets: {
+      id: string;
+      created_at: number;
+      blockchain: 'SOLANA' | 'ETHEREUM';
+      wallet_type?: 'PHANTOM' | 'WEB3AUTH';
+    }[];
+  }[];
+}
+
 export interface FindOrCreateResponseSchema {
   profile: {
     id: string;
@@ -889,6 +995,43 @@ export interface FindOrCreateResponseSchema {
     /** @minLength 1 */
     id: string;
     type: 'EMAIL' | 'PHONE' | 'TWITTER';
+    /** only available for x contact types */
+    bio?: string;
+    /** only available for x contact types */
+    image?: string;
+  };
+}
+
+export interface GetProfilesItemSchema {
+  profile: {
+    id: string;
+    namespace: string;
+    created_at: number;
+    username: string;
+    bio?: string | null;
+    image?: string | null;
+  };
+  wallet?: {
+    address: string;
+  };
+  namespace?: {
+    name: string | null;
+    readableName: string | null;
+    faviconURL: string | null;
+    userProfileURL: string | null;
+  };
+  contact?: {
+    /** @minLength 1 */
+    id: string;
+    type: 'EMAIL' | 'PHONE' | 'TWITTER';
+    /** only available for x contact types */
+    bio?: string;
+    /** only available for x contact types */
+    image?: string;
+  };
+  socialCounts: {
+    followers: number;
+    following: number;
   };
 }
 
@@ -905,9 +1048,29 @@ export interface GetProfilesResponseSchema {
     wallet?: {
       address: string;
     };
+    namespace?: {
+      name: string | null;
+      readableName: string | null;
+      faviconURL: string | null;
+      userProfileURL: string | null;
+    };
+    contact?: {
+      /** @minLength 1 */
+      id: string;
+      type: 'EMAIL' | 'PHONE' | 'TWITTER';
+      /** only available for x contact types */
+      bio?: string;
+      /** only available for x contact types */
+      image?: string;
+    };
+    socialCounts: {
+      followers: number;
+      following: number;
+    };
   }[];
   page: number;
   pageSize: number;
+  totalCount: number;
 }
 
 export interface GetProfileDetailsSchema {
@@ -925,10 +1088,20 @@ export interface GetProfileDetailsSchema {
     /** @minLength 1 */
     id: string;
     type: 'EMAIL' | 'PHONE' | 'TWITTER';
+    /** only available for x contact types */
+    bio?: string;
+    /** only available for x contact types */
+    image?: string;
   };
   socialCounts: {
     followers: number;
     following: number;
+  };
+  namespace?: {
+    name: string | null;
+    readableName: string | null;
+    faviconURL: string | null;
+    userProfileURL: string | null;
   };
 }
 
@@ -970,6 +1143,34 @@ export interface GetProfileFollowingWhoFollowResponseSchema {
   page: number;
   pageSize: number;
 }
+
+export interface LinkedWalletSchema {
+  /** @minLength 32 */
+  address: string;
+  blockchain: 'SOLANA' | 'ETHEREUM';
+}
+
+export type LinkWalletsInputSchema = {
+  data: {
+    /** @minLength 32 */
+    address: string;
+    blockchain: 'SOLANA' | 'ETHEREUM';
+  };
+  proof: string;
+}[];
+
+export type LinkContactsInputSchema = {
+  data: {
+    /** @minLength 1 */
+    id: string;
+    type: 'EMAIL' | 'PHONE' | 'TWITTER';
+    /** only available for x contact types */
+    bio?: string;
+    /** only available for x contact types */
+    image?: string;
+  };
+  proof: string;
+}[];
 
 export interface LikeCommentCountsSchema {
   likeCount: number;
@@ -1019,7 +1220,7 @@ export interface SearchProfilesResponseSchema {
     };
     walletAddress: string | null;
     namespace: {
-      name: string;
+      name: string | null;
       readableName: string | null;
       faviconURL: string | null;
       userProfileURL: string | null;
@@ -1034,6 +1235,9 @@ export interface ProfileIdentitySchema {
     /** @minLength 32 */
     address?: string;
   };
+  contact?: {
+    id: string;
+  };
   profiles: {
     profile: {
       id: string;
@@ -1044,7 +1248,7 @@ export interface ProfileIdentitySchema {
       image?: string | null;
     };
     namespace: {
-      name: string;
+      name: string | null;
       readableName: string | null;
       faviconURL: string | null;
       userProfileURL: string | null;
@@ -1058,6 +1262,9 @@ export interface ProfileIdentityResponseSchema {
       /** @minLength 32 */
       address?: string;
     };
+    contact?: {
+      id: string;
+    };
     profiles: {
       profile: {
         id: string;
@@ -1068,7 +1275,7 @@ export interface ProfileIdentityResponseSchema {
         image?: string | null;
       };
       namespace: {
-        name: string;
+        name: string | null;
         readableName: string | null;
         faviconURL: string | null;
         userProfileURL: string | null;
@@ -1155,7 +1362,7 @@ export type SuggestedDetailData = Record<
   string,
   {
     namespaces: {
-      name: string;
+      name: string | null;
       readableName: string | null;
       faviconURL: string | null;
       userProfileURL: string | null;
@@ -1175,9 +1382,23 @@ export type SuggestedDetailData = Record<
       /** @minLength 1 */
       id: string;
       type: 'EMAIL' | 'PHONE' | 'TWITTER';
+      /** only available for x contact types */
+      bio?: string;
+      /** only available for x contact types */
+      image?: string;
     };
   }
 >;
+
+export interface SuggestedGlobalDetailParams {
+  apiKey: string;
+  /** @default "PHONE" */
+  contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
+  /** should either be a wallet address (default) or a contact id. when using contact ids, specify the contactType via query params */
+  identifier: string;
+}
+
+export type SuggestedGlobalDetailData = SuggestedProfilesToInvite[];
 
 export interface ReferralsDetailParams {
   apiKey: string;
@@ -1198,22 +1419,7 @@ export interface TokenOwnersDetailParams {
   tokenAddress: string;
 }
 
-export interface TokenOwnersDetailData {
-  profiles: {
-    id: string;
-    created_at: number;
-    namespace: string;
-    username: string;
-    bio?: string;
-    image?: string;
-    wallet?: {
-      id: string;
-      blockchain: string;
-    };
-  }[];
-  page: number;
-  pageSize: number;
-}
+export type TokenOwnersDetailData = ITokenHoldersResponseSchema;
 
 export interface PostFollowersParams {
   apiKey: string;
@@ -1355,16 +1561,6 @@ export interface LikesDeleteParams {
 
 export type LikesDeleteData = object;
 
-export interface InviteDetailParams {
-  apiKey: string;
-  /** @default "PHONE" */
-  contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
-  /** should either be a wallet address (default) or a contact id. when using contact ids, specify the contactType via query params */
-  identifier: string;
-}
-
-export type InviteDetailData = SuggestedInviteSchema[];
-
 export interface SocialCountsDetailParams {
   apiKey: string;
   address: string;
@@ -1410,6 +1606,8 @@ export type SwapListData = GetSwapActivityResponseSchema;
 
 export interface IdentitiesDetailParams {
   apiKey: string;
+  /** @default "PHONE" */
+  contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
   page?: string;
   pageSize?: string;
   id: string;
@@ -1419,6 +1617,8 @@ export type IdentitiesDetailData = ProfileIdentityResponseSchema;
 
 export interface ProfilesDetailParams2 {
   apiKey: string;
+  /** @default "PHONE" */
+  contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
   page?: string;
   pageSize?: string;
   /** @default "created_at" */
@@ -1588,7 +1788,7 @@ export class HttpClient<SecurityDataType = unknown> {
  *
  * Documentation for all routes in the API
  */
-export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+export class SocialFi<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   profiles = {
     /**
      * @description For creating a user profile. The endpoint will first check to see if the wallet exists elsewhere on the graph. If it does, we will create a new profile that is namespaced to your app and associate with the wallet you pass in. If the wallet does not yet exist, we will create a node for the wallet, a node for the profile (namespaced to your app) and an edge indicating that the wallet you passed in is associated with the profile on your app.
@@ -1778,6 +1978,31 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         }
       >({
         path: `/profiles/suggested/${identifier}`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Profiles
+     * @name SuggestedGlobalDetail
+     * @summary Get suggested profiles to invite
+     * @request GET:/profiles/suggested/{identifier}/global
+     */
+    suggestedGlobalDetail: (
+      { identifier, ...query }: SuggestedGlobalDetailParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        SuggestedGlobalDetailData,
+        {
+          error: string;
+        }
+      >({
+        path: `/profiles/suggested/${identifier}/global`,
         method: 'GET',
         query: query,
         format: 'json',
@@ -2283,29 +2508,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         ...params,
       }),
   };
-  creators = {
-    /**
-     * No description
-     *
-     * @tags Creators
-     * @name InviteDetail
-     * @summary Get suggested wallets/contacts to invite
-     * @request GET:/creators/invite/{identifier}
-     */
-    inviteDetail: ({ identifier, ...query }: InviteDetailParams, params: RequestParams = {}) =>
-      this.request<
-        InviteDetailData,
-        {
-          error: string;
-        }
-      >({
-        path: `/creators/invite/${identifier}`,
-        method: 'GET',
-        query: query,
-        format: 'json',
-        ...params,
-      }),
-  };
   wallets = {
     /**
      * No description
@@ -2431,11 +2633,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   };
   identities = {
     /**
-     * @description Retrieves all connected wallets associated with a specified wallet address. For each wallet address, up to 5 linked profiles are returned. To retrieve the complete list of profiles for a specific wallet, use the /identities/{id}/profiles endpoint.
+     * @description Retrieves all connected wallets/contacts associated with a specified wallet/contact. For each wallet/contact, returns up to 5 profiles. To retrieve the complete list of profiles for a specific wallet/contact, use the /identities/{id}/profiles endpoint
      *
      * @tags Identities
      * @name IdentitiesDetail
-     * @summary Finds connected wallets using a wallet address.
+     * @summary Finds connected wallets/contacts from an id. this id should be a wallet address or a contact id. when using a contact id, specify the contactType via query params
      * @request GET:/identities/{id}
      */
     identitiesDetail: ({ id, ...query }: IdentitiesDetailParams, params: RequestParams = {}) =>
@@ -2453,11 +2655,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description This endpoint retrieves all profiles that were created by a specific wallet address.
+     * @description This endpoint retrieves all profiles that were created by a specific wallet/contact.
      *
      * @tags Identities
      * @name ProfilesDetail
-     * @summary Finds associated profiles across namespaces using a wallet address.
+     * @summary Finds associated profiles across namespaces using a wallet address or a contact id. when using a contact id, specify the contactType via query params
      * @request GET:/identities/{id}/profiles
      */
     profilesDetail: ({ id, ...query }: ProfilesDetailParams2, params: RequestParams = {}) =>
