@@ -675,6 +675,10 @@ export interface GameDetailsSchema {
   title: string;
   deployUrl: string;
   coverImageUrl: string | null;
+  socialCounts: {
+    likeCount: number;
+    playCount: number;
+  };
 }
 
 export interface GamesAndScoresSchema {
@@ -686,6 +690,10 @@ export interface GamesAndScoresSchema {
       title: string;
       deployUrl: string;
       coverImageUrl: string | null;
+      socialCounts: {
+        likeCount: number;
+        playCount: number;
+      };
     };
     score: {
       /**
@@ -714,6 +722,10 @@ export interface GetGamesResponseSchema {
     title: string;
     deployUrl: string;
     coverImageUrl: string | null;
+    socialCounts: {
+      likeCount: number;
+      playCount: number;
+    };
   }[];
   page: number;
   pageSize: number;
@@ -753,6 +765,21 @@ export interface ProfileSchema {
   username: string;
   bio?: string | null;
   image?: string | null;
+}
+
+export interface ProfileWithWalletSchema {
+  id: string;
+  namespace: string;
+  created_at: number;
+  username: string;
+  bio?: string | null;
+  image?: string | null;
+  wallet?: {
+    id: string;
+    created_at: number;
+    blockchain: 'SOLANA' | 'ETHEREUM';
+    wallet_type?: 'PHANTOM' | 'WEB3AUTH';
+  } | null;
 }
 
 export interface FindOrCreateProfileSchema {
@@ -831,11 +858,6 @@ export interface UpdateProfileSchema {
   username?: string;
   bio?: string;
   image?: string;
-  ownerWallet?: {
-    /** @minLength 32 */
-    address: string;
-    blockchain: 'SOLANA' | 'ETHEREUM';
-  };
   properties?: {
     key: string;
     value: string | number | boolean;
@@ -1113,9 +1135,35 @@ export interface GetProfileFollowersResponseSchema {
     username: string;
     bio?: string | null;
     image?: string | null;
+    wallet?: {
+      id: string;
+      created_at: number;
+      blockchain: 'SOLANA' | 'ETHEREUM';
+      wallet_type?: 'PHANTOM' | 'WEB3AUTH';
+    } | null;
   }[];
   page: number;
   pageSize: number;
+}
+
+export interface GetGlobalProfileFollowersResponseSchema {
+  profiles: {
+    id: string;
+    namespace: string;
+    created_at: number;
+    username: string;
+    bio?: string | null;
+    image?: string | null;
+    wallet?: {
+      id: string;
+      created_at: number;
+      blockchain: 'SOLANA' | 'ETHEREUM';
+      wallet_type?: 'PHANTOM' | 'WEB3AUTH';
+    } | null;
+  }[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
 }
 
 export interface GetProfileFollowingResponseSchema {
@@ -1126,9 +1174,35 @@ export interface GetProfileFollowingResponseSchema {
     username: string;
     bio?: string | null;
     image?: string | null;
+    wallet?: {
+      id: string;
+      created_at: number;
+      blockchain: 'SOLANA' | 'ETHEREUM';
+      wallet_type?: 'PHANTOM' | 'WEB3AUTH';
+    } | null;
   }[];
   page: number;
   pageSize: number;
+}
+
+export interface GetGlobalProfileFollowingResponseSchema {
+  profiles: {
+    id: string;
+    namespace: string;
+    created_at: number;
+    username: string;
+    bio?: string | null;
+    image?: string | null;
+    wallet?: {
+      id: string;
+      created_at: number;
+      blockchain: 'SOLANA' | 'ETHEREUM';
+      wallet_type?: 'PHANTOM' | 'WEB3AUTH';
+    } | null;
+  }[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
 }
 
 export interface GetProfileFollowingWhoFollowResponseSchema {
@@ -1186,11 +1260,23 @@ export interface FollowCountsSchema {
   following: number;
 }
 
+export interface FollowWithGlobalCountsSchema {
+  followers: number;
+  following: number;
+  globalFollowers: number;
+  globalFollowing: number;
+}
+
 export interface WalletSchema {
   id: string;
   created_at: number;
   blockchain: 'SOLANA' | 'ETHEREUM';
   wallet_type?: 'PHANTOM' | 'WEB3AUTH';
+}
+
+export interface ConnectWalletResponseSchema {
+  success: boolean;
+  message?: string;
 }
 
 export interface GetPointsEarnedByPeriodSchema {
@@ -1331,6 +1417,15 @@ export interface FollowersDetailParams {
 
 export type FollowersDetailData = GetProfileFollowersResponseSchema;
 
+export interface FollowersGlobalDetailParams {
+  apiKey: string;
+  page?: string;
+  pageSize?: string;
+  id: string;
+}
+
+export type FollowersGlobalDetailData = GetGlobalProfileFollowersResponseSchema;
+
 export interface FollowingDetailParams {
   apiKey: string;
   page?: string;
@@ -1339,6 +1434,15 @@ export interface FollowingDetailParams {
 }
 
 export type FollowingDetailData = GetProfileFollowingResponseSchema;
+
+export interface FollowingGlobalDetailParams {
+  apiKey: string;
+  page?: string;
+  pageSize?: string;
+  id: string;
+}
+
+export type FollowingGlobalDetailData = GetGlobalProfileFollowingResponseSchema;
 
 export interface FollowingWhoFollowDetailParams {
   apiKey: string;
@@ -1414,6 +1518,8 @@ export type ReferralsDetailData = ReferralProfilesSchema;
 export interface TokenOwnersDetailParams {
   apiKey: string;
   requestorId?: string;
+  /** @default "false" */
+  includeExternalProfiles?: string;
   page?: string;
   pageSize?: string;
   tokenAddress: string;
@@ -1561,12 +1667,19 @@ export interface LikesDeleteParams {
 
 export type LikesDeleteData = object;
 
+export interface ConnectCreateParams {
+  apiKey: string;
+  address: string;
+}
+
+export type ConnectCreateData = ConnectWalletResponseSchema;
+
 export interface SocialCountsDetailParams {
   apiKey: string;
   address: string;
 }
 
-export type SocialCountsDetailData = FollowCountsSchema;
+export type SocialCountsDetailData = FollowWithGlobalCountsSchema;
 
 export interface ProfilesListParams2 {
   apiKey: string;
@@ -1913,6 +2026,31 @@ export class SocialFi<SecurityDataType extends unknown> extends HttpClient<Secur
       }),
 
     /**
+     * @description Get a list of profiles that follow a user across all connected wallets and contacts
+     *
+     * @tags Profiles
+     * @name FollowersGlobalDetail
+     * @summary Get global followers
+     * @request GET:/profiles/{id}/followers/global
+     */
+    followersGlobalDetail: (
+      { id, ...query }: FollowersGlobalDetailParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        FollowersGlobalDetailData,
+        {
+          error: string;
+        }
+      >({
+        path: `/profiles/${id}/followers/global`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
      * @description Get a list of profiles that a user follows
      *
      * @tags Profiles
@@ -1928,6 +2066,31 @@ export class SocialFi<SecurityDataType extends unknown> extends HttpClient<Secur
         }
       >({
         path: `/profiles/${id}/following`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get a list of profiles that a user follows across all connected wallets and contacts
+     *
+     * @tags Profiles
+     * @name FollowingGlobalDetail
+     * @summary Get global following
+     * @request GET:/profiles/{id}/following/global
+     */
+    followingGlobalDetail: (
+      { id, ...query }: FollowingGlobalDetailParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        FollowingGlobalDetailData,
+        {
+          error: string;
+        }
+      >({
+        path: `/profiles/${id}/following/global`,
         method: 'GET',
         query: query,
         format: 'json',
@@ -2118,7 +2281,7 @@ export class SocialFi<SecurityDataType extends unknown> extends HttpClient<Secur
      *
      * @tags Followers
      * @name StateList
-     * @summary Is following a profile.
+     * @summary Is user following a specific profile
      * @request GET:/followers/state
      */
     stateList: (query: StateListParams, params: RequestParams = {}) =>
@@ -2509,6 +2672,36 @@ export class SocialFi<SecurityDataType extends unknown> extends HttpClient<Secur
       }),
   };
   wallets = {
+    /**
+     * @description This endpoint is restricted, talk to Tapestry to get access
+     *
+     * @tags Wallets
+     * @name ConnectCreate
+     * @summary Create a connection between two wallets
+     * @request POST:/wallets/{address}/connect
+     */
+    connectCreate: (
+      { address, ...query }: ConnectCreateParams,
+      data: {
+        connectingWalletAddress: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        ConnectCreateData,
+        {
+          error: string;
+        }
+      >({
+        path: `/wallets/${address}/connect`,
+        method: 'POST',
+        query: query,
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
     /**
      * No description
      *

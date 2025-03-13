@@ -32,28 +32,24 @@ pnpm add socialfi
 import TapestryClient from 'socialfi';
 
 // Initialize the client with your API key
-const client = new TapestryClient({
-  apiKey: 'YOUR_API_KEY',
-  // Optional: override the base URL
-  baseURL: 'https://api.usetapestry.dev/api/v1',
-  // Optional: enable debug mode for API call logging
-  debug: false,
+const client = SocialFi({
+  baseURL: TAPESTRY_URL,
 });
 
 // Example: Create a profile
 async function createProfile() {
   try {
-    const profile = await client.createProfile({
-      username: 'johndoe',
-      walletAddress: 'YOUR_WALLET_ADDRESS', // Optional
-      phoneNumber: '+1234567890', // Optional
-      bio: 'Hello, World!',
-      image: 'https://example.com/avatar.jpg',
-      properties: [
-        // Optional custom properties
-        { key: 'twitter', value: '@johndoe' },
-      ],
-    });
+    const profile = await socialfi.profiles.findOrCreateCreate(
+      {
+        apiKey: process.env.TAPESTRY_API_KEY || '',
+      },
+      {
+        walletAddress: 'YOUR_WALLET_ADDRESS',
+        username: 'johndoe',
+        bio: 'Hello World!',
+        blockchain: 'SOLANA',
+      },
+    );
     console.log('Profile created:', profile);
   } catch (error) {
     console.error('Error creating profile:', error);
@@ -63,33 +59,19 @@ async function createProfile() {
 // Example: Follow a user
 async function followUser() {
   try {
-    await client.followUser('YOUR_PROFILE_ID', 'TARGET_PROFILE_ID');
+    await socialfi.followers.postFollowers(
+      {
+        apiKey: process.env.TAPESTRY_API_KEY || '',
+      },
+      {
+        startId: 'YOUR PROFILE ID',
+        endId: 'ANOTHER PROFILE ID',
+      },
+    );
     console.log('Successfully followed user');
   } catch (error) {
     console.error('Error following user:', error);
   }
-}
-
-// Example: Get user's followers
-async function getFollowers(profileId: string) {
-  try {
-    const followers = await client.getProfile(profileId);
-    console.log('Profile details:', followers);
-  } catch (error) {
-    console.error('Error getting followers:', error);
-  }
-}
-
-// Advanced: Direct API access with automatic API key injection
-async function advancedUsage() {
-  // Access any API endpoint directly, even if not wrapped by the SDK
-  // No need to include apiKey in the query parameters - it's automatically injected
-  const result = await client.profiles.profilesList({
-    page: '1',
-    pageSize: '20',
-    sortBy: 'created_at',
-    sortDirection: 'DESC',
-  });
 }
 ```
 
@@ -104,188 +86,6 @@ interface TapestryConfig {
   apiKey: string; // Required: Your Tapestry API key
   baseURL?: string; // Optional: Override the default API URL
   debug?: boolean; // Optional: Enable debug logging
-}
-```
-
-### Automatic API Key Injection
-
-The SDK automatically injects your API key into all requests, so you don't need to include it in each API call. This makes your code cleaner and less error-prone.
-
-```typescript
-// No need to include apiKey in the query parameters
-const profiles = await client.profiles.profilesList({
-  page: '1',
-  pageSize: '20',
-  sortBy: 'created_at',
-  sortDirection: 'DESC',
-});
-
-// The SDK automatically adds the apiKey parameter for you
-```
-
-### Profile Management
-
-```typescript
-// Create a profile
-const profile = await client.createProfile({
-  username: 'username',
-  walletAddress: 'address', // Optional
-  phoneNumber: '+1234567890', // Optional
-  bio: 'bio',
-  image: 'image_url',
-  properties: [
-    // Optional custom properties
-    { key: 'custom_field', value: 'value' },
-  ],
-});
-
-// Update a profile
-const updatedProfile = await client.updateProfile('profile_id', {
-  username: 'new_username',
-  bio: 'new_bio',
-  properties: [{ key: 'updated_field', value: 'new_value' }],
-});
-
-// Get profile details
-const profileDetails = await client.getProfile('profile_id');
-
-// Find profiles by identity
-const identityProfiles = await client.api.identities.identitiesDetail({
-  id: 'wallet_address_or_phone',
-});
-```
-
-### Social Graph
-
-```typescript
-// Follow a user
-await client.followUser('follower_id', 'target_id');
-
-// Unfollow a user
-await client.unfollowUser('follower_id', 'target_id');
-
-// Check if following
-const isFollowing = await client.isFollowing('user_id', 'target_id');
-
-// Get social counts for a wallet
-const socialCounts = await client.api.wallets.socialCountsDetail({
-  address: 'wallet_address',
-});
-```
-
-### Content & Interactions
-
-```typescript
-// Create content
-const content = await client.createContent({
-  id: 'content_id',
-  profileId: 'author_id',
-  properties: [
-    { key: 'content_type', value: 'post' },
-    { key: 'text', value: 'Hello world!' },
-  ],
-});
-
-// Add a comment
-const comment = await client.createComment({
-  contentId: 'content_id',
-  profileId: 'author_id',
-  text: 'Great post!',
-  properties: [{ key: 'visibility', value: 'public' }],
-});
-
-// Like content
-await client.likeContent('content_id', 'user_id');
-
-// Unlike content
-await client.unlikeContent('content_id', 'user_id');
-
-// Get content details
-const contentDetails = await client.getContent('content_id');
-```
-
-### Search & Activity
-
-```typescript
-// Search for profiles
-const searchResults = await client.searchProfiles('search query');
-
-// Get activity feed
-const activityFeed = await client.getActivityFeed('username');
-
-// Get swap activity
-const swapActivity = await client.api.activity.swapList({
-  profileId: 'user_id',
-  tokenAddress: 'token_address', // Optional
-});
-```
-
-### Notifications
-
-```typescript
-// Send a wallet notification
-await client.api.notifications.notificationsCreate(
-  {},
-  {
-    recipient: 'wallet_address',
-    title: 'New Message',
-    body: 'You have a new message!',
-    data: {
-      type: 'message',
-      messageId: '123',
-    },
-  },
-);
-```
-
-### Advanced Usage: Direct API Access
-
-For advanced use cases or accessing API endpoints not yet wrapped by the SDK, you can use the API client directly:
-
-```typescript
-// All API endpoints are available directly on the client
-// No need to include apiKey in the query parameters - it's automatically injected
-const profiles = await client.profiles.profilesList({
-  page: '1',
-  pageSize: '20',
-  sortBy: 'created_at',
-  sortDirection: 'DESC',
-});
-
-// For even more advanced use cases, you can access the underlying API client
-const { api } = client;
-
-// Batch operations
-const batchResults = await client.contents.batchReadCreate({}, ['content_id_1', 'content_id_2']);
-
-// Complex queries with custom properties
-const searchResults = await client.search.profilesList({
-  query: 'search term',
-  includeExternalProfiles: 'true',
-  page: '1',
-  pageSize: '50',
-});
-```
-
-## Error Handling
-
-The SDK uses Axios for HTTP requests. All API calls can throw errors that should be handled appropriately:
-
-```typescript
-try {
-  const result = await client.getProfile('profile_id');
-} catch (error) {
-  if (axios.isAxiosError(error)) {
-    // Handle API errors
-    console.error('API Error:', error.response?.data);
-    // Check specific error codes
-    if (error.response?.status === 404) {
-      console.error('Profile not found');
-    }
-  } else {
-    // Handle other errors
-    console.error('Unknown error:', error);
-  }
 }
 ```
 
