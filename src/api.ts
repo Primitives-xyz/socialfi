@@ -1,5 +1,6 @@
 /* eslint-disable */
 /* tslint:disable */
+// @ts-nocheck
 /*
  * ---------------------------------------------------------------
  * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
@@ -285,12 +286,14 @@ export interface ContactSchema {
 export interface ContentSchema {
   id: string;
   created_at: number;
+  namespace: string;
 }
 
 export interface ContentDetailsSchema {
   content: {
     id: string;
     created_at: number;
+    namespace: string;
   } | null;
   socialCounts: {
     likeCount: number;
@@ -306,6 +309,22 @@ export interface ContentDetailsSchema {
   };
   requestingProfileSocialInfo?: {
     hasLiked?: boolean;
+  };
+}
+
+export interface ContentWithCreatorSchema {
+  content: {
+    id: string;
+    created_at: number;
+    namespace: string;
+  } | null;
+  authorProfile: {
+    id: string;
+    namespace: string;
+    created_at: number;
+    username: string;
+    bio?: string | null;
+    image?: string | null;
   };
 }
 
@@ -332,6 +351,7 @@ export interface GetContestsResponseSchema {
     content: {
       id: string;
       created_at: number;
+      namespace: string;
     } | null;
     socialCounts: {
       likeCount: number;
@@ -359,6 +379,7 @@ export interface GetBatchContentsResponseSchema {
     content: {
       id: string;
       created_at: number;
+      namespace: string;
     } | null;
     socialCounts: {
       likeCount: number;
@@ -497,6 +518,7 @@ export interface ClaimChestResponseSchema {
 export interface PlayGameResponseSchema {
   userBalance?: string;
   gameCreditsFee: number;
+  challengeFee?: number;
 }
 
 export interface GameEndInputSchema {
@@ -508,9 +530,85 @@ export interface GameEndInputSchema {
   profileId: string;
 }
 
+export interface CreditTransactionSchema {
+  /**
+   * @min 0
+   * @exclusiveMin true
+   */
+  id: number;
+  userId: string;
+  amount: string;
+  description?: string | null;
+  type: string;
+}
+
 export interface CustomPropertySchema {
   key: string;
   value: string | number | boolean;
+}
+
+export interface TweetSchema {
+  id: string;
+  text: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @min 0 */
+  likes: number;
+  /** @min 0 */
+  retweets: number;
+  /** @format uri */
+  url: string;
+}
+
+export interface UserTweetsSchema {
+  handle: string;
+  tweets: {
+    id: string;
+    text: string;
+    /** @format date-time */
+    createdAt: string;
+    /** @min 0 */
+    likes: number;
+    /** @min 0 */
+    retweets: number;
+    /** @format uri */
+    url: string;
+  }[];
+}
+
+export interface CastSchema {
+  id: string;
+  text: string;
+  /**
+   * @min 0
+   * @exclusiveMin true
+   */
+  createdAt: number;
+  /** @format uri */
+  url: string;
+}
+
+export interface UserCastsSchema {
+  user: {
+    fid: number;
+    username: string;
+  };
+  casts: {
+    id: string;
+    text: string;
+    /**
+     * @min 0
+     * @exclusiveMin true
+     */
+    createdAt: number;
+    /** @format uri */
+    url: string;
+  }[];
+}
+
+export interface FarcasterUserSchema {
+  fid: number;
+  username: string;
 }
 
 export interface CreateFollowSchema {
@@ -525,6 +623,62 @@ export interface DeleteFollowSchema {
 
 export interface IsFollowingSchema {
   isFollowing: boolean;
+}
+
+export interface ProfileIdentitySchema {
+  wallet?: {
+    /** @minLength 32 */
+    address?: string;
+  };
+  contact?: {
+    id: string;
+  };
+  profiles: {
+    profile: {
+      id: string;
+      namespace: string;
+      created_at: number;
+      username: string;
+      bio?: string | null;
+      image?: string | null;
+    };
+    namespace: {
+      name: string | null;
+      readableName: string | null;
+      faviconURL: string | null;
+      userProfileURL: string | null;
+    };
+  }[];
+}
+
+export interface ProfileIdentityResponseSchema {
+  identities: {
+    wallet?: {
+      /** @minLength 32 */
+      address?: string;
+    };
+    contact?: {
+      id: string;
+    };
+    profiles: {
+      profile: {
+        id: string;
+        namespace: string;
+        created_at: number;
+        username: string;
+        bio?: string | null;
+        image?: string | null;
+      };
+      namespace: {
+        name: string | null;
+        readableName: string | null;
+        faviconURL: string | null;
+        userProfileURL: string | null;
+      };
+    }[];
+  }[];
+  page: number;
+  pageSize: number;
 }
 
 export interface LeaderboardEntrySchema {
@@ -675,6 +829,12 @@ export interface GameDetailsSchema {
   title: string;
   deployUrl: string;
   coverImageUrl: string | null;
+  templateId: string | null;
+  isMobileFriendly: boolean;
+  creatorProfile: {
+    id: string;
+    username: string;
+  };
   socialCounts: {
     likeCount: number;
     playCount: number;
@@ -690,6 +850,12 @@ export interface GamesAndScoresSchema {
       title: string;
       deployUrl: string;
       coverImageUrl: string | null;
+      templateId: string | null;
+      isMobileFriendly: boolean;
+      creatorProfile: {
+        id: string;
+        username: string;
+      };
       socialCounts: {
         likeCount: number;
         playCount: number;
@@ -722,6 +888,12 @@ export interface GetGamesResponseSchema {
     title: string;
     deployUrl: string;
     coverImageUrl: string | null;
+    templateId: string | null;
+    isMobileFriendly: boolean;
+    creatorProfile: {
+      id: string;
+      username: string;
+    };
     socialCounts: {
       likeCount: number;
       playCount: number;
@@ -731,6 +903,38 @@ export interface GetGamesResponseSchema {
   pageSize: number;
 }
 
+export interface ChallengeLeaderboardEntrySchema {
+  position: number;
+  profileId: string;
+  dynamicUserId?: string;
+  score: number;
+  credits: number;
+}
+
+export interface CurrentChallengeResponseSchema {
+  challenge: {
+    startAt: string;
+    endAt: string;
+    gameId: string;
+    totalPrizePool: string;
+    totalPlayers: number;
+  };
+  leaderboard: {
+    position: number;
+    profileId: string;
+    dynamicUserId?: string;
+    score: number;
+    credits: number;
+  }[];
+  userPosition: {
+    position: number;
+    profileId: string;
+    dynamicUserId?: string;
+    score: number;
+    credits: number;
+  } | null;
+}
+
 export interface LinkSchema {
   label: string;
   url: string;
@@ -738,24 +942,62 @@ export interface LinkSchema {
 
 export interface BaseNotificationSchema {
   message: string;
-  recipient: string;
-}
-
-export interface WalletNotificationSchema {
-  message: string;
-  recipient: string;
-  medium: 'wallet';
-  title: string;
   link?: {
     label: string;
     url: string;
   };
+  recipient: string;
+  /** @default false */
+  skip?: boolean;
+}
+
+export interface WalletNotificationSchema {
+  message: string;
+  link?: {
+    label: string;
+    url: string;
+  };
+  recipient: string;
+  /** @default false */
+  skip?: boolean;
+  medium: 'wallet';
+  title: string;
 }
 
 export interface PhoneNotificationSchema {
   message: string;
+  link?: {
+    label: string;
+    url: string;
+  };
   recipient: string;
+  /** @default false */
+  skip?: boolean;
   medium: 'phone';
+}
+
+export interface EmailNotificationSchema {
+  message: string;
+  link?: {
+    label: string;
+    url: string;
+  };
+  recipient: string;
+  /** @default false */
+  skip?: boolean;
+  medium: 'email';
+  subject: string;
+}
+
+export interface GetPointsEarnedByPeriodSchema {
+  periodType: 'MONTH' | 'YEAR';
+}
+
+export interface GetPointsEarnedByPeriodResponseSchema {
+  periods: {
+    totalPoints: number;
+    date: string;
+  }[];
 }
 
 export interface ProfileSchema {
@@ -1246,6 +1488,32 @@ export type LinkContactsInputSchema = {
   proof: string;
 }[];
 
+export interface SearchProfilesResponseSchema {
+  profiles: {
+    profile: {
+      id: string;
+      namespace: string;
+      created_at: number;
+      username: string;
+      bio?: string | null;
+      image?: string | null;
+    };
+    socialCounts: {
+      followers: number;
+      following: number;
+    };
+    walletAddress: string | null;
+    namespace: {
+      name: string | null;
+      readableName: string | null;
+      faviconURL: string | null;
+      userProfileURL: string | null;
+    };
+  }[];
+  page: number;
+  pageSize: number;
+}
+
 export interface LikeCommentCountsSchema {
   likeCount: number;
   commentCount: number;
@@ -1279,99 +1547,6 @@ export interface ConnectWalletResponseSchema {
   message?: string;
 }
 
-export interface GetPointsEarnedByPeriodSchema {
-  periodType: 'MONTH' | 'YEAR';
-}
-
-export interface GetPointsEarnedByPeriodResponseSchema {
-  periods: {
-    totalPoints: number;
-    date: string;
-  }[];
-}
-
-export interface SearchProfilesResponseSchema {
-  profiles: {
-    profile: {
-      id: string;
-      namespace: string;
-      created_at: number;
-      username: string;
-      bio?: string | null;
-      image?: string | null;
-    };
-    socialCounts: {
-      followers: number;
-      following: number;
-    };
-    walletAddress: string | null;
-    namespace: {
-      name: string | null;
-      readableName: string | null;
-      faviconURL: string | null;
-      userProfileURL: string | null;
-    };
-  }[];
-  page: number;
-  pageSize: number;
-}
-
-export interface ProfileIdentitySchema {
-  wallet?: {
-    /** @minLength 32 */
-    address?: string;
-  };
-  contact?: {
-    id: string;
-  };
-  profiles: {
-    profile: {
-      id: string;
-      namespace: string;
-      created_at: number;
-      username: string;
-      bio?: string | null;
-      image?: string | null;
-    };
-    namespace: {
-      name: string | null;
-      readableName: string | null;
-      faviconURL: string | null;
-      userProfileURL: string | null;
-    };
-  }[];
-}
-
-export interface ProfileIdentityResponseSchema {
-  identities: {
-    wallet?: {
-      /** @minLength 32 */
-      address?: string;
-    };
-    contact?: {
-      id: string;
-    };
-    profiles: {
-      profile: {
-        id: string;
-        namespace: string;
-        created_at: number;
-        username: string;
-        bio?: string | null;
-        image?: string | null;
-      };
-      namespace: {
-        name: string | null;
-        readableName: string | null;
-        faviconURL: string | null;
-        userProfileURL: string | null;
-      };
-    }[];
-  }[];
-  page: number;
-  pageSize: number;
-}
-
 export interface FindOrCreateCreateParams {
   apiKey: string;
 }
@@ -1383,6 +1558,7 @@ export interface ProfilesListParams {
   /** @minLength 32 */
   walletAddress?: string;
   phoneNumber?: string;
+  email?: string;
   page?: string;
   pageSize?: string;
   /** @default "created_at" */
@@ -1408,43 +1584,43 @@ export interface ProfilesUpdateParams {
 
 export type ProfilesUpdateData = ProfileSchema;
 
-export interface FollowersDetailParams {
+export interface FollowersListParams {
   apiKey: string;
   page?: string;
   pageSize?: string;
   id: string;
 }
 
-export type FollowersDetailData = GetProfileFollowersResponseSchema;
+export type FollowersListData = GetProfileFollowersResponseSchema;
 
-export interface FollowersGlobalDetailParams {
+export interface FollowersGlobalListParams {
   apiKey: string;
   page?: string;
   pageSize?: string;
   id: string;
 }
 
-export type FollowersGlobalDetailData = GetGlobalProfileFollowersResponseSchema;
+export type FollowersGlobalListData = GetGlobalProfileFollowersResponseSchema;
 
-export interface FollowingDetailParams {
+export interface FollowingListParams {
   apiKey: string;
   page?: string;
   pageSize?: string;
   id: string;
 }
 
-export type FollowingDetailData = GetProfileFollowingResponseSchema;
+export type FollowingListData = GetProfileFollowingResponseSchema;
 
-export interface FollowingGlobalDetailParams {
+export interface FollowingGlobalListParams {
   apiKey: string;
   page?: string;
   pageSize?: string;
   id: string;
 }
 
-export type FollowingGlobalDetailData = GetGlobalProfileFollowingResponseSchema;
+export type FollowingGlobalListData = GetGlobalProfileFollowingResponseSchema;
 
-export interface FollowingWhoFollowDetailParams {
+export interface FollowingWhoFollowListParams {
   apiKey: string;
   requestorId: string;
   page?: string;
@@ -1452,7 +1628,7 @@ export interface FollowingWhoFollowDetailParams {
   id: string;
 }
 
-export type FollowingWhoFollowDetailData = GetProfileFollowingWhoFollowResponseSchema;
+export type FollowingWhoFollowListData = GetProfileFollowingWhoFollowResponseSchema;
 
 export interface SuggestedDetailParams {
   apiKey: string;
@@ -1494,7 +1670,7 @@ export type SuggestedDetailData = Record<
   }
 >;
 
-export interface SuggestedGlobalDetailParams {
+export interface SuggestedGlobalListParams {
   apiKey: string;
   /** @default "PHONE" */
   contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
@@ -1502,9 +1678,9 @@ export interface SuggestedGlobalDetailParams {
   identifier: string;
 }
 
-export type SuggestedGlobalDetailData = SuggestedProfilesToInvite[];
+export type SuggestedGlobalListData = SuggestedProfilesToInvite[];
 
-export interface ReferralsDetailParams {
+export interface ReferralsListParams {
   apiKey: string;
   /** Optional filter to specify the depth of upstream referral connections (profiles that referred this user). Defaults to 2 if no value is specified. */
   upstream?: string;
@@ -1513,7 +1689,7 @@ export interface ReferralsDetailParams {
   id: string;
 }
 
-export type ReferralsDetailData = ReferralProfilesSchema;
+export type ReferralsListData = ReferralProfilesSchema;
 
 export interface TokenOwnersDetailParams {
   apiKey: string;
@@ -1526,6 +1702,13 @@ export interface TokenOwnersDetailParams {
 }
 
 export type TokenOwnersDetailData = ITokenHoldersResponseSchema;
+
+export interface NotificationCreateParams {
+  apiKey: string;
+  id: string;
+}
+
+export type NotificationCreateData = object;
 
 export interface PostFollowersParams {
   apiKey: string;
@@ -1637,7 +1820,7 @@ export interface CommentsDeleteParams {
 
 export type CommentsDeleteData = object;
 
-export interface RepliesDetailParams {
+export interface RepliesListParams {
   apiKey: string;
   page?: string;
   pageSize?: string;
@@ -1645,7 +1828,7 @@ export interface RepliesDetailParams {
   id: string;
 }
 
-export type RepliesDetailData = GetCommentsResponseSchema;
+export type RepliesListData = GetCommentsResponseSchema;
 
 export interface BatchReadCreateParams2 {
   apiKey: string;
@@ -1672,14 +1855,14 @@ export interface ConnectCreateParams {
   address: string;
 }
 
-export type ConnectCreateData = ConnectWalletResponseSchema;
+export type ConnectCreateData = object;
 
-export interface SocialCountsDetailParams {
+export interface SocialCountsListParams {
   apiKey: string;
   address: string;
 }
 
-export type SocialCountsDetailData = FollowWithGlobalCountsSchema;
+export type SocialCountsListData = FollowWithGlobalCountsSchema;
 
 export interface ProfilesListParams2 {
   apiKey: string;
@@ -1691,12 +1874,6 @@ export interface ProfilesListParams2 {
 }
 
 export type ProfilesListResult = SearchProfilesResponseSchema;
-
-export interface NotificationsCreateParams {
-  apiKey: string;
-}
-
-export type NotificationsCreateData = object;
 
 export interface FeedListParams {
   apiKey: string;
@@ -1719,8 +1896,6 @@ export type SwapListData = GetSwapActivityResponseSchema;
 
 export interface IdentitiesDetailParams {
   apiKey: string;
-  /** @default "PHONE" */
-  contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
   page?: string;
   pageSize?: string;
   id: string;
@@ -1728,7 +1903,7 @@ export interface IdentitiesDetailParams {
 
 export type IdentitiesDetailData = ProfileIdentityResponseSchema;
 
-export interface ProfilesDetailParams2 {
+export interface ProfilesListParams4 {
   apiKey: string;
   /** @default "PHONE" */
   contactType?: 'EMAIL' | 'PHONE' | 'TWITTER';
@@ -1741,7 +1916,7 @@ export interface ProfilesDetailParams2 {
   id: string;
 }
 
-export type ProfilesDetailResult = GetProfilesResponseSchema;
+export type ProfilesListOutput = GetProfilesResponseSchema;
 
 import type { AxiosInstance, AxiosRequestConfig, HeadersDefaults, ResponseType } from 'axios';
 import axios from 'axios';
@@ -2007,13 +2182,13 @@ export class SocialFi<SecurityDataType extends unknown> extends HttpClient<Secur
      * @description Get a list of profiles that follow a user
      *
      * @tags Profiles
-     * @name FollowersDetail
+     * @name FollowersList
      * @summary Get followers
      * @request GET:/profiles/{id}/followers
      */
-    followersDetail: ({ id, ...query }: FollowersDetailParams, params: RequestParams = {}) =>
+    followersList: ({ id, ...query }: FollowersListParams, params: RequestParams = {}) =>
       this.request<
-        FollowersDetailData,
+        FollowersListData,
         {
           error: string;
         }
@@ -2029,16 +2204,16 @@ export class SocialFi<SecurityDataType extends unknown> extends HttpClient<Secur
      * @description Get a list of profiles that follow a user across all connected wallets and contacts
      *
      * @tags Profiles
-     * @name FollowersGlobalDetail
+     * @name FollowersGlobalList
      * @summary Get global followers
      * @request GET:/profiles/{id}/followers/global
      */
-    followersGlobalDetail: (
-      { id, ...query }: FollowersGlobalDetailParams,
+    followersGlobalList: (
+      { id, ...query }: FollowersGlobalListParams,
       params: RequestParams = {},
     ) =>
       this.request<
-        FollowersGlobalDetailData,
+        FollowersGlobalListData,
         {
           error: string;
         }
@@ -2054,13 +2229,13 @@ export class SocialFi<SecurityDataType extends unknown> extends HttpClient<Secur
      * @description Get a list of profiles that a user follows
      *
      * @tags Profiles
-     * @name FollowingDetail
+     * @name FollowingList
      * @summary Get following
      * @request GET:/profiles/{id}/following
      */
-    followingDetail: ({ id, ...query }: FollowingDetailParams, params: RequestParams = {}) =>
+    followingList: ({ id, ...query }: FollowingListParams, params: RequestParams = {}) =>
       this.request<
-        FollowingDetailData,
+        FollowingListData,
         {
           error: string;
         }
@@ -2076,16 +2251,16 @@ export class SocialFi<SecurityDataType extends unknown> extends HttpClient<Secur
      * @description Get a list of profiles that a user follows across all connected wallets and contacts
      *
      * @tags Profiles
-     * @name FollowingGlobalDetail
+     * @name FollowingGlobalList
      * @summary Get global following
      * @request GET:/profiles/{id}/following/global
      */
-    followingGlobalDetail: (
-      { id, ...query }: FollowingGlobalDetailParams,
+    followingGlobalList: (
+      { id, ...query }: FollowingGlobalListParams,
       params: RequestParams = {},
     ) =>
       this.request<
-        FollowingGlobalDetailData,
+        FollowingGlobalListData,
         {
           error: string;
         }
@@ -2101,16 +2276,16 @@ export class SocialFi<SecurityDataType extends unknown> extends HttpClient<Secur
      * @description Helpful for creating UIs like "this user is followed by {number} other users you follow"
      *
      * @tags Profiles
-     * @name FollowingWhoFollowDetail
+     * @name FollowingWhoFollowList
      * @summary Get a list of profiles in a user's network that also follow a given profile
      * @request GET:/profiles/{id}/following-who-follow
      */
-    followingWhoFollowDetail: (
-      { id, ...query }: FollowingWhoFollowDetailParams,
+    followingWhoFollowList: (
+      { id, ...query }: FollowingWhoFollowListParams,
       params: RequestParams = {},
     ) =>
       this.request<
-        FollowingWhoFollowDetailData,
+        FollowingWhoFollowListData,
         {
           error: string;
         }
@@ -2151,16 +2326,16 @@ export class SocialFi<SecurityDataType extends unknown> extends HttpClient<Secur
      * No description
      *
      * @tags Profiles
-     * @name SuggestedGlobalDetail
+     * @name SuggestedGlobalList
      * @summary Get suggested profiles to invite
      * @request GET:/profiles/suggested/{identifier}/global
      */
-    suggestedGlobalDetail: (
-      { identifier, ...query }: SuggestedGlobalDetailParams,
+    suggestedGlobalList: (
+      { identifier, ...query }: SuggestedGlobalListParams,
       params: RequestParams = {},
     ) =>
       this.request<
-        SuggestedGlobalDetailData,
+        SuggestedGlobalListData,
         {
           error: string;
         }
@@ -2176,13 +2351,13 @@ export class SocialFi<SecurityDataType extends unknown> extends HttpClient<Secur
      * @description Retrieve all referral connections for a user profile, including both users who made referrals (upstream) and users who were referred (downstream) by this profile, with depth indicating the number of connection levels (defaults to 2, maximum 6). For example, depth=1 shows direct referrals, while depth=2 includes referrals made by those direct referrals.
      *
      * @tags Profiles
-     * @name ReferralsDetail
+     * @name ReferralsList
      * @summary Retrieve referrals
      * @request GET:/profiles/{id}/referrals
      */
-    referralsDetail: ({ id, ...query }: ReferralsDetailParams, params: RequestParams = {}) =>
+    referralsList: ({ id, ...query }: ReferralsListParams, params: RequestParams = {}) =>
       this.request<
-        ReferralsDetailData,
+        ReferralsListData,
         {
           error: string;
         }
@@ -2215,6 +2390,39 @@ export class SocialFi<SecurityDataType extends unknown> extends HttpClient<Secur
         path: `/profiles/token-owners/${tokenAddress}`,
         method: 'GET',
         query: query,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Profiles
+     * @name NotificationCreate
+     * @summary Send a notification to the creator of a profile
+     * @request POST:/profiles/{id}/notification
+     */
+    notificationCreate: (
+      { id, ...query }: NotificationCreateParams,
+      data: {
+        /** @maxLength 320 */
+        message: string;
+        /** @maxLength 100 */
+        title?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        NotificationCreateData,
+        {
+          error: string;
+        }
+      >({
+        path: `/profiles/${id}/notification`,
+        method: 'POST',
+        query: query,
+        body: data,
+        type: ContentType.Json,
         format: 'json',
         ...params,
       }),
@@ -2572,13 +2780,13 @@ export class SocialFi<SecurityDataType extends unknown> extends HttpClient<Secur
      * No description
      *
      * @tags Comments
-     * @name RepliesDetail
+     * @name RepliesList
      * @summary Get comment replies
      * @request GET:/comments/{id}/replies
      */
-    repliesDetail: ({ id, ...query }: RepliesDetailParams, params: RequestParams = {}) =>
+    repliesList: ({ id, ...query }: RepliesListParams, params: RequestParams = {}) =>
       this.request<
-        RepliesDetailData,
+        RepliesListData,
         {
           error: string;
         }
@@ -2706,16 +2914,13 @@ export class SocialFi<SecurityDataType extends unknown> extends HttpClient<Secur
      * No description
      *
      * @tags Wallets
-     * @name SocialCountsDetail
+     * @name SocialCountsList
      * @summary Get socials counts for a given wallet
      * @request GET:/wallets/{address}/socialCounts
      */
-    socialCountsDetail: (
-      { address, ...query }: SocialCountsDetailParams,
-      params: RequestParams = {},
-    ) =>
+    socialCountsList: ({ address, ...query }: SocialCountsListParams, params: RequestParams = {}) =>
       this.request<
-        SocialCountsDetailData,
+        SocialCountsListData,
         {
           error: string;
         }
@@ -2746,35 +2951,6 @@ export class SocialFi<SecurityDataType extends unknown> extends HttpClient<Secur
         path: `/search/profiles`,
         method: 'GET',
         query: query,
-        format: 'json',
-        ...params,
-      }),
-  };
-  notifications = {
-    /**
-     * @description only supports wallet notifications for now. recipient must be a wallet address
-     *
-     * @tags Notifications
-     * @name NotificationsCreate
-     * @summary Send a notification
-     * @request POST:/notifications/
-     */
-    notificationsCreate: (
-      query: NotificationsCreateParams,
-      data: WalletNotificationSchema,
-      params: RequestParams = {},
-    ) =>
-      this.request<
-        NotificationsCreateData,
-        {
-          error: string;
-        }
-      >({
-        path: `/notifications/`,
-        method: 'POST',
-        query: query,
-        body: data,
-        type: ContentType.Json,
         format: 'json',
         ...params,
       }),
@@ -2851,13 +3027,13 @@ export class SocialFi<SecurityDataType extends unknown> extends HttpClient<Secur
      * @description This endpoint retrieves all profiles that were created by a specific wallet/contact.
      *
      * @tags Identities
-     * @name ProfilesDetail
+     * @name ProfilesList
      * @summary Finds associated profiles across namespaces using a wallet address or a contact id. when using a contact id, specify the contactType via query params
      * @request GET:/identities/{id}/profiles
      */
-    profilesDetail: ({ id, ...query }: ProfilesDetailParams2, params: RequestParams = {}) =>
+    profilesList: ({ id, ...query }: ProfilesListParams4, params: RequestParams = {}) =>
       this.request<
-        ProfilesDetailResult,
+        ProfilesListOutput,
         {
           error: string;
         }
