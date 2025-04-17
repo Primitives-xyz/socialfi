@@ -29,19 +29,23 @@ pnpm add socialfi
 ## Quick Start
 
 ```typescript
-import TapestryClient from 'socialfi';
+import { SocialFi } from 'socialfi';
 
-// Initialize the client with your API key
-const client = SocialFi({
-  baseURL: TAPESTRY_URL,
+// const API_URL = 'https://api.usetapestry.dev/v1/'; // tapestry prod URL
+const API_URL = 'https://api.dev.usetapestry.dev/v1/'; // tapestry dev URL
+
+const API_KEY = process.env.TAPESTRY_API_KEY; // Get you API key from https://app.usetapestry.dev/
+
+const client = new SocialFi({
+  baseURL: API_URL,
 });
 
 // Example: Create a profile
 async function createProfile() {
   try {
-    const profile = await socialfi.profiles.findOrCreateCreate(
+    const profile = await client.profiles.findOrCreateCreate(
       {
-        apiKey: process.env.TAPESTRY_API_KEY || '',
+        apiKey: API_KEY, 
       },
       {
         walletAddress: 'YOUR_WALLET_ADDRESS',
@@ -59,9 +63,9 @@ async function createProfile() {
 // Example: Follow a user
 async function followUser() {
   try {
-    await socialfi.followers.postFollowers(
+    await client.followers.postFollowers(
       {
-        apiKey: process.env.TAPESTRY_API_KEY || '',
+        apiKey: API_KEY,
       },
       {
         startId: 'YOUR PROFILE ID',
@@ -82,10 +86,10 @@ async function followUser() {
 The `TapestryClient` constructor accepts the following configuration options:
 
 ```typescript
-interface TapestryConfig {
-  apiKey: string; // Required: Your Tapestry API key
+interface SocialFi {
   baseURL?: string; // Optional: Override the default API URL
-  debug?: boolean; // Optional: Enable debug logging
+  apiKey?: string;  // Optional: Your Tapestry API key
+  debug?: boolean;  // Optional: Enable debug logging
 }
 ```
 
@@ -94,7 +98,9 @@ interface TapestryConfig {
 This SDK is written in TypeScript and provides comprehensive type definitions for all API responses and parameters. Import types directly:
 
 ```typescript
-import TapestryClient, {
+import  {
+  SocialFi,
+
   // Profile types
   ProfileSchema,
   FindOrCreateProfileSchema,
@@ -110,15 +116,13 @@ import TapestryClient, {
   // Social types
   CreateFollowSchema,
 
-  // Activity types
-  FeedDetailData,
 
   // Search types
   SearchProfilesResponseSchema,
 
   // Common types
   CustomPropertySchema,
-  TapestryConfig,
+
 } from 'socialfi';
 ```
 
