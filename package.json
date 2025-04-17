@@ -1,6 +1,6 @@
 {
   "name": "socialfi",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "Build social features into your app with ease",
   "main": "dist/api.js",
   "types": "dist/api.d.ts",
